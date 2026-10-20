@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>순서 맞추기 대결 게임 (멀티터치 완결판)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #fffdf5;
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-main);
+            color: #333;
+            overflow: hidden; /* 화면 스크롤 방지 */
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none; /* 브라우저 기본 제스처(스와이프, 줌) 완벽 차단 */
+        }
+        .font-cute { font-family: 'Jua', sans-serif; }
+
+        /* 드래그 앤 드롭 요소 최적화 */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-height: 300px;
+            position: relative;
+            touch-action: none; /* 컨테이너 스크롤 차단 */
+        }
+        .sentence-card {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: grab;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            transition: border-color 0.2s, background-color 0.2s;
+            word-break: keep-all;
+            touch-action: none; /* 개별 카드 제스처 차단 (중요) */
+        }
+        .sentence-card:active { cursor: grabbing; }
+        
+        .sentence-card.dragging {
+            opacity: 0.2; /* 원래 위치의 카드는 희미하게 */
+        }
+        
+        /* GPU 가속을 사용하는 복제본 카드 (렉 제거의 핵심) */
+        .ghost-card {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            pointer-events: none; /* 아래 요소가 이벤트를 받을 수 있도록 투과 */
+            background-color: #fffafb;
+            border: 2px solid #f472b6;
+            box-shadow: 0 15px 25px -5px rgba(0,0,0,0.2);
+            margin: 0;
+            opacity: 0.95;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            will-change: transform; /* 브라우저 렌더링 최적화 힌트 */
+            transform-origin: center;
+        }
+
+        /* 애니메이션 및 디자인 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .shake-err { 
+            animation: shake 0.4s ease-in-out; 
+            border-color: #fca5a5 !important; 
+            background-color: #fef2f2 !important; 
+        }
+
+        .col-p1 { border-top-color: #f87171; }
+        .col-p2 { border-top-color: #60a5fa; }
+        .col-p3 { border-top-color: #34d399; }
+        .col-p4 { border-top-color: #fbbf24; }
+
+        .btn-pop { transition: transform 0.1s; }
+        .btn-pop:active { transform: scale(0.95); }
+        
+        .racer-icon {
+            transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+<body class="w-screen h-screen flex flex-col relative">
+
+    <!-- Start Screen -->
+    <section id="screen-start" class="absolute inset-0 flex flex-col items-center justify-center z-50 bg-white/90 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white p-8 md:p-12 rounded-[2rem] shadow-2xl border-4 border-indigo-200 text-center max-w-lg w-[90%]">
+            <h1 class="text-4xl md:text-5xl text-indigo-500 font-cute mb-2">순서 맞추기 대결!</h1>
+            <p class="text-gray-500 mb-8 font-medium">가장 먼저 3문제를 맞히는 사람은 누구일까요?</p>
+            
+            <h2 class="text-xl font-cute text-gray-700 mb-4">대결 인원을 선택하세요</h2>
+            <div class="flex justify-center gap-4 mb-8">
+                <button onclick="setPlayerCount(2)" id="btn-p2" class="btn-pop p-cnt-btn w-16 h-16 rounded-2xl text-2xl font-cute border-2 border-gray-200 bg-gray-50 text-gray-500">2명</button>
+                <button onclick="setPlayerCount(3)" id="btn-p3" class="btn-pop p-cnt-btn w-16 h-16 rounded-2xl text-2xl font-cute border-2 border-indigo-400 bg-indigo-50 text-indigo-600">3명</button>
+                <button onclick="setPlayerCount(4)" id="btn-p4" class="btn-pop p-cnt-btn w-16 h-16 rounded-2xl text-2xl font-cute border-2 border-gray-200 bg-gray-50 text-gray-500">4명</button>
+            </div>
+
+            <button onclick="startGame()" class="btn-pop font-cute text-3xl bg-pink-400 hover:bg-pink-500 text-white w-full py-4 rounded-full shadow-lg shadow-pink-200">
+                대결 시작! 🚀
+            </button>
+        </div>
+    </section>
+
+    <!-- Main Game Screen -->
+    <section id="screen-game" class="hidden flex-col w-full h-full p-2 md:p-4 gap-4">
+        
+        <!-- Header & Race Track -->
+        <header class="w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-3 flex flex-col gap-2 shrink-0 relative">
+            <div class="flex flex-col md:flex-row justify-between items-center px-2 gap-2">
+                <h2 class="font-cute text-xl md:text-2xl text-gray-700">🏁 목표: 3개 먼저 완성하기!</h2>
+                <!-- 실시간 타이머 -->
+                <div id="game-timer" class="font-cute text-3xl md:text-4xl text-indigo-600 font-bold bg-indigo-50 px-6 py-1 rounded-full border-2 border-indigo-200 tracking-wider">
+                    00:00
+                </div>
+                <button onclick="resetGame()" class="btn-pop bg-gray-100 text-gray-600 px-4 py-2 md:py-1 rounded-full font-cute text-sm hover:bg-gray-200">처음으로</button>
+            </div>
+            <!-- Track lanes will be injected here -->
+            <div id="race-tracks-container" class="flex flex-col gap-1 w-full bg-gray-50 p-2 rounded-xl shadow-inner border border-gray-100 mt-2">
+            </div>
+        </header>
+
+        <!-- Player Columns Area -->
+        <main id="player-columns" class="flex-grow flex gap-2 overflow-hidden">
+            <!-- Columns injected by JS -->
+        </main>
+    </section>
+
+    <!-- End Screen Modal (최종 순위표) -->
+    <div id="modal-end" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-[90%] shadow-2xl border-4 border-indigo-300 text-center transform scale-95 transition-transform duration-300 relative overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="text-6xl mb-2">🎉</div>
+            <h2 class="text-4xl font-cute text-indigo-600 mb-6">최종 순위</h2>
+            
+            <div id="ranking-list" class="flex flex-col gap-3 mb-6 overflow-y-auto p-2">
+                <!-- 랭킹 리스트 삽입 -->
+            </div>
+
+            <button onclick="resetGame()" class="btn-pop font-cute text-2xl bg-indigo-500 hover:bg-indigo-600 text-white w-full py-3 rounded-full shadow-md shrink-0">
+                다시 하기 🔄
+            </button>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-[90]"></canvas>
+
+    <script>
+        // 주제 데이터: 서론(0) - 먼저(1) - 다음으로(2) - 마지막으로(3) - 결론(4)
+        const topicsData = [
+            {
+                title: "라면 끓이기", emoji: "🍜",
+                sentences: [
+                    "집에서 누구나 쉽게 끓일 수 있는 라면 요리 방법입니다.",
+                    "먼저, 냄비에 물을 붓고 가스레인지 불을 켭니다.",
+                    "다음으로, 물이 보글보글 끓기 시작하면 면과 수프를 넣습니다.",
+                    "마지막으로, 3분 정도 더 끓인 뒤 불을 끄고 그릇에 담습니다.",
+                    "순서를 잘 지켜 끓인 라면은 아주 쫄깃하고 맛있습니다."
+                ]
+            },
+            {
+                title: "양치질하기", emoji: "🪥",
+                sentences: [
+                    "충치를 예방하고 이를 튼튼하게 관리하는 양치질 방법입니다.",
+                    "먼저, 칫솔모에 치약을 완두콩 크기만큼 조금 짭니다.",
+                    "다음으로, 치아의 겉면과 안쪽 면을 위아래로 부드럽게 닦습니다.",
+                    "마지막으로, 혓바닥을 닦고 물로 입안을 깨끗하게 헹굽니다.",
+                    "식사 후에 매일 양치질을 하면 치아를 건강하게 지킬 수 있습니다."
+                ]
+            },
+            {
+                title: "가방 싸기", emoji: "🎒",
+                sentences: [
+                    "스스로 학교 갈 준비를 하기 위해 가방을 싸는 방법입니다.",
+                    "먼저, 알림장을 보고 내일 배울 과목이 무엇인지 확인합니다.",
+                    "다음으로, 시간표에 맞는 교과서와 공책을 가방에 넣습니다.",
+                    "마지막으로, 필통에 학용품이 잘 들어있는지 확인하고 챙깁니다.",
+                    "미리 가방을 싸두면 아침에 허둥대지 않고 학교에 갈 수 있습니다."
+                ]
+            },
+            {
+                title: "손 씻기", emoji: "🧼",
+                sentences: [
+                    "전염병을 예방하기 위해 비누로 손을 씻는 방법입니다.",
+                    "먼저, 물로 손을 적신 후 비누를 묻혀 거품을 냅니다.",
+                    "다음으로, 양손의 손바닥과 손등을 꼼꼼하게 문지릅니다.",
+                    "마지막으로, 흐르는 물로 거품을 헹구고 수건으로 물기를 닦습니다.",
+                    "외출 후 손을 잘 씻으면 우리 몸을 건강하게 유지할 수 있습니다."
+                ]
+            },
+            {
+                title: "종이학 접기", emoji: "🕊️",
+                sentences: [
+                    "색종이 한 장으로 예쁜 종이학을 접는 방법입니다.",
+                    "먼저, 색종이를 세모 모양으로 두 번 접었다가 폅니다.",
+                    "다음으로, 선을 따라 네모 주머니 모양을 만들어 줍니다.",
+                    "마지막으로, 양쪽 날개를 위로 접어 올리고 머리를 만들어 줍니다.",
+                    "완성된 종이학은 책상 위에 올려두면 예쁜 장식이 됩니다."
+                ]
+            },
+            {
+                title: "샌드위치 만들기", emoji: "🥪",
+                sentences: [
+                    "간식으로 먹기 좋은 나만의 샌드위치 만드는 방법입니다.",
+                    "먼저, 식빵 한쪽 면에 달콤한 잼을 골고루 바릅니다.",
+                    "다음으로, 그 위에 양상추와 치즈, 햄을 차곡차곡 올립니다.",
+                    "마지막으로, 남은 식빵 한 장을 덮고 먹기 좋은 크기로 자릅니다.",
+                    "직접 만든 샌드위치는 우유와 함께 먹으면 아주 훌륭한 간식이 됩니다."
+                ]
+            },
+            {
+                title: "화분에 식물 심기", emoji: "🌱",
+                sentences: [
+                    "교실이나 집에서 식물을 화분에 예쁘게 심는 방법입니다.",
+                    "먼저, 화분 바닥에 작은 돌을 깔고 흙을 반쯤 채웁니다.",
+                    "다음으로, 식물의 뿌리가 상하지 않게 화분 가운데에 놓습니다.",
+                    "마지막으로, 빈 공간을 남은 흙으로 덮고 물을 흠뻑 줍니다.",
+                    "정성껏 심은 식물에 매일 물을 주면 무럭무럭 자랍니다."
+                ]
+            },
+            {
+                title: "일기 쓰기", emoji: "📓",
+                sentences: [
+                    "하루를 돌아보며 나의 생각과 느낌을 담아 일기 쓰는 방법입니다.",
+                    "먼저, 일기장 맨 위에 오늘 날짜와 날씨를 적습니다.",
+                    "다음으로, 오늘 있었던 일 중에서 가장 기억에 남는 일을 고릅니다.",
+                    "마지막으로, 그 일을 겪으며 느낀 기분이나 생각을 솔직하게 씁니다.",
+                    "매일 일기를 쓰면 나의 소중한 추억을 오래 간직할 수 있습니다."
+                ]
+            },
+            {
+                title: "책상 정리하기", emoji: "🧹",
+                sentences: [
+                    "공부하기 좋은 환경을 만들기 위해 책상을 정리하는 방법입니다.",
+                    "먼저, 책상 위에 널브러진 쓰레기들을 쓰레기통에 버립니다.",
+                    "다음으로, 책과 공책은 크기에 맞게 책꽂이에 가지런히 꽂습니다.",
+                    "마지막으로, 연필과 지우개 같은 학용품을 연필꽂이에 정리합니다.",
+                    "깨끗하게 정리된 책상에 앉으면 공부에 훨씬 더 집중할 수 있습니다."
+                ]
+            },
+            {
+                title: "신호등 건너기", emoji: "🚦",
+                sentences: [
+                    "횡단보도에서 교통사고를 예방하며 안전하게 길을 건너는 방법입니다.",
+                    "먼저, 횡단보도 앞에서 초록색 불이 켜질 때까지 기다립니다.",
+                    "다음으로, 초록불이 켜지면 자동차가 멈추었는지 양옆을 살핍니다.",
+                    "마지막으로, 운전자가 나를 볼 수 있게 손을 들고 안전하게 건넙니다.",
+                    "이 원칙을 꼭 지켜야 도로에서 나의 안전을 지킬 수 있습니다."
+                ]
+            }
+        ];
+
+        const playerConfigs = [
+            { id: 'p1', name: '참가자 1', emoji: '🚗', colorClass: 'col-p1', bgClass: 'bg-red-50', textClass: 'text-red-600', ringClass: 'ring-red-200' },
+            { id: 'p2', name: '참가자 2', emoji: '🚀', colorClass: 'col-p2', bgClass: 'bg-blue-50', textClass: 'text-blue-600', ringClass: 'ring-blue-200' },
+            { id: 'p3', name: '참가자 3', emoji: '🚤', colorClass: 'col-p3', bgClass: 'bg-green-50', textClass: 'text-green-600', ringClass: 'ring-green-200' },
+            { id: 'p4', name: '참가자 4', emoji: '🚁', colorClass: 'col-p4', bgClass: 'bg-yellow-50', textClass: 'text-yellow-600', ringClass: 'ring-yellow-200' },
+        ];
+
+        let numPlayers = 3;
+        let playersData = [];
+        const GOAL_SCORE = 3;
+
+        // 시간 관리용 변수
+        let gameStartTime = 0;
+        let timerInterval = null;
+        let finishedPlayersCount = 0;
+
+        // 드래그 앤 드롭 상태 관리 (멀티터치 지원)
+        const activeDrags = new Map();
+
+        // 전역 이벤트 리스너 등록 (고스트 카드 멈춤 현상 완벽 해결)
+        document.addEventListener('pointermove', handlePointerMove, { passive: false });
+        document.addEventListener('pointerup', handlePointerUp);
+        document.addEventListener('pointercancel', handlePointerUp);
+
+        function setPlayerCount(num) {
+            numPlayers = num;
+            document.querySelectorAll('.p-cnt-btn').forEach(btn => {
+                btn.className = "btn-pop p-cnt-btn w-16 h-16 rounded-2xl text-2xl font-cute border-2 border-gray-200 bg-gray-50 text-gray-500";
+            });
+            const activeBtn = document.getElementById(`btn-p${num}`);
+            if(num === 2) activeBtn.className = "btn-pop p-cnt-btn w-16 h-16 rounded-2xl text-2xl font-cute border-2 border-red-400 bg-red-50 text-red-600";
+            if(num === 3) activeBtn.className = "btn-pop p-cnt-btn w-16 h-16 rounded-2xl text-2xl font-cute border-2 border-indigo-400 bg-indigo-50 text-indigo-600";
+            if(num === 4) activeBtn.className = "btn-pop p-cnt-btn w-16 h-16 rounded-2xl text-2xl font-cute border-2 border-yellow-400 bg-yellow-50 text-yellow-600";
+        }
+
+        // --- 시간 포맷 함수 ---
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            return `${minutes}:${seconds}`;
+        }
+
+        function startTimer() {
+            gameStartTime = Date.now();
+            updateTimerDisplay(); // 초기 설정
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function updateTimerDisplay() {
+            const elapsed = Date.now() - gameStartTime;
+            document.getElementById('game-timer').innerText = formatTime(elapsed);
+        }
+
+        function startGame() {
+            playersData = [];
+            finishedPlayersCount = 0;
+            
+            for (let i = 0; i < numPlayers; i++) {
+                playersData.push({
+                    ...playerConfigs[i],
+                    score: 0,
+                    solvedTopics: [],
+                    currentTopicIndex: null, // 추가: 현재 풀고 있는 주제 추적
+                    rank: 0,
+                    finishTimeMs: 0
+                });
+            }
+
+            document.getElementById('screen-start').classList.add('opacity-0');
+            setTimeout(() => {
+                document.getElementById('screen-start').classList.add('hidden');
+                const gameScreen = document.getElementById('screen-game');
+                gameScreen.classList.remove('hidden');
+                gameScreen.classList.add('flex');
+                
+                buildGameUI();
+                startTimer(); // 타이머 시작
+            }, 300);
+        }
+
+        function resetGame() {
+            stopTimer(); // 타이머 정지
+            
+            const modal = document.getElementById('modal-end');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('flex');
+            
+            const startScreen = document.getElementById('screen-start');
+            startScreen.classList.remove('hidden');
+            setTimeout(() => { startScreen.classList.remove('opacity-0'); }, 10);
+            
+            // 모든 드래그 상태 초기화
+            activeDrags.forEach(state => state.ghost.remove());
+            activeDrags.clear();
+        }
+
+        function buildGameUI() {
+            const trackContainer = document.getElementById('race-tracks-container');
+            trackContainer.innerHTML = '';
+            playersData.forEach(p => {
+                const lane = document.createElement('div');
+                lane.className = `relative w-full h-8 rounded-full ${p.bgClass} flex items-center border border-white`;
+                lane.innerHTML = `
+                    <span class="absolute text-xs font-bold text-gray-400 ml-2 z-0">${p.name}</span>
+                    <div id="racer-${p.id}" class="racer-icon absolute z-10 text-2xl" style="left: 0%;">
+                        ${p.emoji}
+                    </div>
+                `;
+                trackContainer.appendChild(lane);
+            });
+
+            const colsContainer = document.getElementById('player-columns');
+            colsContainer.innerHTML = '';
+            
+            colsContainer.className = `flex-grow grid gap-2 overflow-hidden w-full h-full`;
+            if (numPlayers === 2) colsContainer.classList.add('grid-cols-2');
+            else if (numPlayers === 3) colsContainer.classList.add('grid-cols-3');
+            else if (numPlayers === 4) colsContainer.classList.add('grid-cols-4');
+
+            playersData.forEach(p => {
+                const col = document.createElement('div');
+                col.className = `flex flex-col bg-white rounded-2xl shadow-sm border-t-8 ${p.colorClass} border-gray-200 h-full overflow-hidden`;
+                
+                col.innerHTML = `
+                    <div class="px-3 py-2 flex justify-between items-center bg-gray-50 border-b border-gray-100 shrink-0">
+                        <span class="font-cute text-lg ${p.textClass}">${p.name}</span>
+                        <span class="font-cute text-lg text-gray-500 bg-white px-2 rounded-lg border shadow-sm">
+                            <span id="score-${p.id}">0</span> / 3
+                        </span>
+                    </div>
+                    <div class="p-2 md:p-3 text-center shrink-0">
+                        <h3 id="title-${p.id}" class="font-cute text-lg md:text-xl text-gray-700">주제 로딩중...</h3>
+                    </div>
+                    
+                    <!-- 카드가 렌더링될 내부 콘텐츠 래퍼 -->
+                    <div id="col-content-${p.id}" class="flex-grow flex flex-col overflow-hidden relative">
+                        <div class="flex-grow overflow-y-auto px-2 pb-2">
+                            <div id="list-${p.id}" class="card-list h-full" data-player="${p.id}"></div>
+                        </div>
+                        <div class="p-2 md:p-3 bg-gray-50 border-t border-gray-100 shrink-0">
+                            <button onclick="checkAnswer('${p.id}')" class="btn-pop w-full py-2 md:py-3 rounded-xl font-cute text-xl bg-white border-2 ${p.colorClass.replace('border-top-color', 'border')} shadow-sm text-gray-700 hover:bg-gray-100">
+                                정답 확인 ✨
+                            </button>
+                        </div>
+                    </div>
+                `;
+                colsContainer.appendChild(col);
+                assignNewTopic(p.id);
+            });
+        }
+
+        function assignNewTopic(playerId) {
+            const player = playersData.find(p => p.id === playerId);
+            if (player.score >= GOAL_SCORE) {
+                player.currentTopicIndex = null;
+                return; // 완료된 플레이어 방지
+            }
+            
+            // 현재 다른 참가자들이 풀고 있는 주제 번호 수집 (겹침 방지)
+            const otherActiveTopics = playersData
+                .filter(p => p.id !== playerId && p.currentTopicIndex !== null)
+                .map(p => p.currentTopicIndex);
+
+            // 내가 이미 푼 주제 + 남들이 지금 풀고 있는 주제 제외
+            let availableIndices = topicsData
+                .map((_, idx) => idx)
+                .filter(idx => !player.solvedTopics.includes(idx) && !otherActiveTopics.includes(idx));
+
+            // 혹시라도 조건에 맞는 주제가 모두 고갈되었다면 (예외 처리) 내가 안 푼 주제 중에서 배정
+            if(availableIndices.length === 0) {
+                availableIndices = topicsData.map((_, idx) => idx).filter(idx => !player.solvedTopics.includes(idx));
+            }
+            
+            const originalIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+            const topic = topicsData[originalIndex];
+            player.currentTopicIndex = originalIndex; // 현재 풀고 있는 주제 기록
+            
+            document.getElementById(`title-${playerId}`).innerText = `${topic.emoji} ${topic.title}`;
+            
+            let indices = [0, 1, 2, 3, 4];
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            if (indices.every((val, i) => val === i)) {
+                [indices[0], indices[1]] = [indices[1], indices[0]];
+            }
+
+            const listContainer = document.getElementById(`list-${playerId}`);
+            if(!listContainer) return; // 통과한 경우 리스트가 없을 수 있음
+            
+            listContainer.innerHTML = '';
+            listContainer.dataset.topicIndex = originalIndex;
+
+            indices.forEach(idx => {
+                const sentence = topic.sentences[idx];
+                const card = document.createElement('div');
+                card.className = `sentence-card ${player.ringClass}`;
+                card.dataset.correctIndex = idx; 
+                
+                card.innerHTML = `
+                    <div class="text-gray-300 flex-shrink-0">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </div>
+                    <span class="flex-grow select-none pointer-events-none">${sentence}</span>
+                `;
+                
+                // 최적화된 포인터 이벤트 등록
+                card.addEventListener('pointerdown', handlePointerDown);
+                
+                listContainer.appendChild(card);
+            });
+        }
+
+        // --- D&D Engine (Do not change logic) ---
+        function handlePointerDown(e) {
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            e.preventDefault(); 
+            
+            const element = e.currentTarget;
+            const container = element.parentElement;
+            
+            const ghost = element.cloneNode(true);
+            ghost.className = 'ghost-card';
+            
+            const rect = element.getBoundingClientRect();
+            ghost.style.width = `${rect.width}px`;
+            ghost.style.height = `${rect.height}px`;
+            
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            
+            const initialX = e.clientX - offsetX;
+            const initialY = e.clientY - offsetY;
+            ghost.style.transform = `translate3d(${initialX}px, ${initialY}px, 0)`;
+            
+            document.body.appendChild(ghost);
+            element.classList.add('dragging');
+            
+            activeDrags.set(e.pointerId, { element, ghost, offsetX, offsetY, container });
+        }
+
+        function handlePointerMove(e) {
+            const dragState = activeDrags.get(e.pointerId);
+            if (!dragState) return;
+            
+            e.preventDefault(); 
+            
+            const { element, ghost, offsetX, offsetY, container } = dragState;
+            
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+            ghost.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+            
+            const targetElement = document.elementFromPoint(e.clientX, e.clientY);
+            
+            if (targetElement) {
+                const targetCard = targetElement.closest('.sentence-card');
+                
+                if (targetCard && targetCard.parentElement === container && targetCard !== element) {
+                    const targetRect = targetCard.getBoundingClientRect();
+                    const targetMid = targetRect.top + (targetRect.height / 2);
+                    
+                    if (e.clientY < targetMid) {
+                        container.insertBefore(element, targetCard);
+                    } else {
+                        container.insertBefore(element, targetCard.nextSibling);
+                    }
+                }
+            }
+        }
+
+        function handlePointerUp(e) {
+            const dragState = activeDrags.get(e.pointerId);
+            if (!dragState) return;
+            
+            const { element, ghost } = dragState;
+            
+            element.classList.remove('dragging');
+            if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost); 
+            
+            activeDrags.delete(e.pointerId);
+        }
+
+        function checkAnswer(playerId) {
+            const player = playersData.find(p => p.id === playerId);
+            if (player.score >= GOAL_SCORE) return; // 중복 클릭 방지
+
+            const listContainer = document.getElementById(`list-${playerId}`);
+            if (!listContainer) return;
+
+            const cards = Array.from(listContainer.children);
+            
+            let isCorrect = true;
+            for (let i = 0; i < cards.length; i++) {
+                if (parseInt(cards[i].dataset.correctIndex) !== i) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                fireColumnConfetti(listContainer);
+                
+                player.score++;
+                document.getElementById(`score-${playerId}`).innerText = player.score;
+                
+                const trackWidthPercent = (player.score / GOAL_SCORE) * 100;
+                const finalPos = Math.min(trackWidthPercent, 90); 
+                document.getElementById(`racer-${playerId}`).style.left = `${finalPos}%`;
+                
+                const topicIndex = parseInt(listContainer.dataset.topicIndex);
+                player.solvedTopics.push(topicIndex);
+
+                if (player.score >= GOAL_SCORE) {
+                    handleIndividualWin(player);
+                } else {
+                    setTimeout(() => { assignNewTopic(playerId); }, 800);
+                }
+            } else {
+                cards.forEach(card => {
+                    card.classList.remove('shake-err');
+                    void card.offsetWidth; 
+                    card.classList.add('shake-err');
+                });
+                
+                const msg = document.createElement('div');
+                msg.className = `absolute z-50 bg-red-500 text-white font-cute px-3 py-1 rounded-full shadow-md text-sm pointer-events-none transition-opacity duration-500`;
+                msg.innerText = "순서가 틀렸어요!";
+                
+                const btn = listContainer.parentElement.nextElementSibling;
+                const rect = btn.getBoundingClientRect();
+                msg.style.left = `${rect.left + rect.width/2}px`;
+                msg.style.top = `${rect.top - 20}px`;
+                msg.style.transform = `translateX(-50%)`;
+                document.body.appendChild(msg);
+                
+                setTimeout(() => { msg.classList.add('opacity-0'); }, 1000);
+                setTimeout(() => { msg.remove(); }, 1500);
+            }
+        }
+
+        // --- 개별 학생 목표 달성 처리 ---
+        function handleIndividualWin(player) {
+            finishedPlayersCount++;
+            player.rank = finishedPlayersCount;
+            player.finishTimeMs = Date.now() - gameStartTime;
+            player.currentTopicIndex = null; // 완료 시 현재 주제 반환(다른 학생이 풀 수 있도록)
+            
+            document.getElementById(`title-${player.id}`).innerText = "목표 달성 완료!";
+
+            // 강제로 진행중이던 해당 컬럼의 드래그 상태 클리어
+            activeDrags.forEach((state, pointerId) => {
+                if (state.container && state.container.dataset.player === player.id) {
+                    state.ghost.remove();
+                    activeDrags.delete(pointerId);
+                }
+            });
+            
+            const colContent = document.getElementById(`col-content-${player.id}`);
+            colContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full bg-white rounded-xl pb-4 animate-pulse">
+                    <div class="text-7xl mb-4">🏆</div>
+                    <div class="text-3xl font-cute ${player.textClass} mb-2">${player.rank}등 통과!</div>
+                    <div class="text-xl font-cute bg-gray-100 text-gray-700 px-5 py-2 rounded-full border border-gray-200 mt-2">
+                        기록: <span class="font-bold text-indigo-600">${formatTime(player.finishTimeMs)}</span>
+                    </div>
+                </div>
+            `;
+
+            // 모든 플레이어가 달성했는지 확인
+            if (finishedPlayersCount >= numPlayers) {
+                stopTimer(); // 전체 타이머 정지
+                setTimeout(() => endGame(), 1000); // 1초 뒤 전체 종료 모달 띄우기
+            }
+        }
+
+        // --- 전체 게임 종료 처리 ---
+        function endGame() {
+            // 남은 드래그 정리
+            activeDrags.forEach(state => {
+                state.ghost.remove();
+                if(state.element) state.element.classList.remove('dragging');
+            });
+            activeDrags.clear();
+
+            const modal = document.getElementById('modal-end');
+            const rankingList = document.getElementById('ranking-list');
+            rankingList.innerHTML = '';
+
+            // 랭킹 순으로 정렬
+            const sortedPlayers = [...playersData].sort((a, b) => a.rank - b.rank);
+            
+            sortedPlayers.forEach(p => {
+                let medal = '👏';
+                if (p.rank === 1) medal = '🥇';
+                else if (p.rank === 2) medal = '🥈';
+                else if (p.rank === 3) medal = '🥉';
+
+                rankingList.innerHTML += `
+                    <div class="flex items-center justify-between ${p.rank === 1 ? 'bg-yellow-50 border-yellow-200' : 'bg-gray-50 border-gray-200'} border rounded-xl p-3 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">${medal}</span>
+                            <span class="font-cute text-xl ${p.textClass}">${p.emoji} ${p.name}</span>
+                        </div>
+                        <span class="font-cute text-xl text-indigo-600 font-bold bg-white px-3 py-1 rounded-lg border">
+                            ${formatTime(p.finishTimeMs)}
+                        </span>
+                    </div>
+                `;
+            });
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.replace('scale-95', 'scale-100');
+            }, 10);
+            
+            fireFullScreenConfetti();
+        }
+
+        // --- 애니메이션 (Confetti) ---
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let confettiAnimId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f472b6'];
+
+        function createParticles(x, y, count, spread) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    r: Math.random() * 6 + 4,
+                    dx: (Math.random() - 0.5) * spread,
+                    dy: (Math.random() * -15) - 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.floor(Math.random() * 10) - 10,
+                    tiltAngleInc: (Math.random() * 0.07) + 0.05,
+                    tiltAngle: 0
+                });
+            }
+            if (!confettiAnimId) loopConfetti();
+        }
+
+        function fireColumnConfetti(containerElement) {
+            const rect = containerElement.getBoundingClientRect();
+            const centerX = rect.left + (rect.width / 2);
+            const topY = rect.top + (rect.height / 2);
+            createParticles(centerX, topY, 40, 20); 
+        }
+
+        function fireFullScreenConfetti() {
+            createParticles(canvas.width / 4, canvas.height, 80, 30);
+            createParticles((canvas.width / 4) * 3, canvas.height, 80, 30);
+            createParticles(canvas.width / 2, canvas.height / 2, 60, 40);
+        }
+
+        function loopConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.tiltAngle += p.tiltAngleInc;
+                p.y += (Math.cos(p.tiltAngle) + 1 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle) * 2 + p.dx;
+                p.dy += 0.3; 
+                p.y += p.dy;
+
+                ctx.beginPath();
+                ctx.lineWidth = p.r;
+                ctx.strokeStyle = p.color;
+                ctx.moveTo(p.x + p.tilt + p.r, p.y);
+                ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r);
+                ctx.stroke();
+
+                if (p.y < canvas.height + 100) active = true;
+            }
+
+            particles = particles.filter(p => p.y < canvas.height + 100);
+
+            if (active) {
+                confettiAnimId = requestAnimationFrame(loopConfetti);
+            } else {
+                confettiAnimId = null;
+            }
+        }
+    </script>
+</body>
+</html>
