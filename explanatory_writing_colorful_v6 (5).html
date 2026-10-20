@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알록달록 설명서 탐험대</title>
+<style>
+:root{--ink:#25334b;--navy:#2c4778;--blue:#557dc4;--paper:#fff;--bg:#f3f6fc;--line:#dce4f0;--sky:#eaf1ff;--mint:#eaf8f1;--green:#26734d;--sun:#fff4d1;--orange:#875714;--pink:#fff0f3;--red:#a23d4b;--purple:#f2edff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 8% 0%,#eaf1ff 0,transparent 26%),var(--bg);color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;line-height:1.65}button,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #f2bd4e;outline-offset:2px}.app{max-width:1050px;margin:auto;padding:17px 16px 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.brand{font-weight:900;font-size:20px;color:var(--navy)}.score{border:1px solid var(--line);background:#fff;border-radius:99px;padding:7px 13px;font-weight:900;white-space:nowrap}.screen{display:none}.screen.active{display:block}.panel{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:clamp(18px,4vw,34px);box-shadow:0 12px 32px #2c47780c}.hero{text-align:center;padding-top:30px;padding-bottom:28px}.eyebrow{display:inline-block;border-radius:99px;background:var(--sky);color:var(--navy);font-weight:900;font-size:14px;padding:5px 12px}.hero h1{font-size:clamp(28px,4.5vw,43px);line-height:1.25;color:var(--navy);margin:15px 0 9px}.lead{color:#64738b;font-size:18px;max-width:730px;margin:0 auto}.topic-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:25px 0 18px}.topic{min-height:136px;text-align:left;border:2px solid var(--line);background:#fff;border-radius:18px;padding:14px;transition:transform .15s,border-color .15s,background .15s}.topic:hover{transform:translateY(-2px);border-color:var(--blue);background:#f9fbff}.emoji{display:block;font-size:32px;line-height:1.25;margin-bottom:7px}.topic strong{display:block;font-size:16px;line-height:1.4}.topic small{display:block;color:#7b8798;font-size:13px;margin-top:4px}.teacher-tip{background:#f7f9fe;border-radius:14px;padding:13px 15px;text-align:left;color:#53657f;font-size:14px;margin:17px auto 0;max-width:850px}.btn{border:0;border-radius:12px;padding:12px 17px;font-weight:900;transition:transform .12s,filter .12s}.btn:active{transform:scale(.985)}.primary{background:var(--navy);color:#fff}.primary:hover{filter:brightness(1.12)}.secondary{background:#edf1f7;color:#33445f}.secondary:hover{background:#e1e8f3}.outline{border:1px solid var(--line);background:#fff;color:var(--navy)}.wide{width:100%}.stagebar{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px}.stage-chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 10px;color:#7a8799;font-size:13px;font-weight:800}.stage-chip.current{background:var(--navy);border-color:var(--navy);color:#fff}.stage-chip.done{background:var(--mint);border-color:#bfe5cf;color:var(--green)}.progress{height:8px;border-radius:99px;background:#e3eaf5;overflow:hidden;margin-bottom:18px}.progress-fill{height:100%;background:linear-gradient(90deg,#557dc4,#74b9a0);width:0;transition:width .2s}.stage-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.stage-head h2{font-size:clamp(24px,3.4vw,32px);line-height:1.3;margin:9px 0 4px;color:var(--navy)}.muted{color:#6d7b90;margin:0}.count-pill{background:var(--purple);color:#59458d;border-radius:10px;padding:7px 10px;font-size:13px;font-weight:900;white-space:nowrap}.prompt{font-size:21px;font-weight:900;line-height:1.5;margin:22px 0 11px}.hint{border-left:4px solid #9cb1d7;background:#f6f8fc;border-radius:9px;padding:12px 14px;color:#52637b;margin:12px 0}.options{display:grid;gap:10px;margin:17px 0}.option{display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;border:2px solid var(--line);border-radius:14px;background:#fff;padding:13px 14px;font-weight:750;line-height:1.55}.option:hover:not(:disabled){border-color:#8da6d5;background:#f8faff}.option:disabled{cursor:default}.option.correct{border-color:#6aba91;background:var(--mint)}.option.wrong{border-color:#e1a0a9;background:#fff1f2}.letter{width:30px;height:30px;flex-shrink:0;display:grid;place-items:center;background:#edf1f7;border-radius:50%;font-weight:900;color:#52627d}.feedback{display:none;border-radius:12px;padding:13px 15px;margin:14px 0;font-weight:750}.feedback.show{display:block}.feedback.good{background:var(--mint);color:var(--green)}.feedback.try{background:var(--sun);color:var(--orange)}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:20px}.actions .spacer{flex:1}.paragraph-card{border:1px solid var(--line);background:#fbfcff;border-radius:17px;padding:15px;margin:15px 0}.paragraph-line{padding:11px 12px;border-bottom:1px dashed #d9e1ee}.paragraph-line:last-child{border-bottom:0}.word-select{border:2px solid #cdd8e8;background:white;border-radius:10px;padding:7px 9px;min-width:124px;font-weight:900;color:var(--navy);margin-right:5px}.mini-label{font-size:13px;font-weight:900;color:#61738f;display:inline-block;margin-bottom:5px}.compare-card{display:grid;gap:9px;margin:16px 0}.sample{background:#fbfcff;border:1px solid var(--line);border-radius:13px;padding:13px 14px;font-weight:700}.sample.bad{background:#fff8eb;border-color:#f0ddb1}.sample.good{background:#f0faf4;border-color:#c4e8d1}.write-intro{background:var(--sky);color:#314d80;border-radius:13px;padding:12px 14px;margin:14px 0}.write-field{background:#fbfcff;border:1px solid var(--line);border-radius:15px;padding:13px 14px;margin:12px 0}.write-field label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:900;margin-bottom:8px}.order-label{background:#e8effc;color:#38588d;border-radius:99px;padding:3px 8px;font-size:13px;white-space:nowrap}.write-field textarea{width:100%;min-height:72px;resize:vertical;border:2px solid #d9e1ec;border-radius:11px;padding:11px 12px;background:#fff;line-height:1.65}.write-field textarea::placeholder{color:#9aa6b7}.marker-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px}.marker-row label{margin:0}.marker-row select{border:1px solid #cad6e7;border-radius:9px;padding:6px 8px;background:#fff;color:var(--navy);font-weight:800}.rubric{display:grid;gap:8px;margin:14px 0}.rubric-item{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#fff}.rubric-item.ok{background:var(--mint);border-color:#b9e3ca}.rubric-item.fix{background:#fff8e7;border-color:#f0d69a}.draft{white-space:pre-wrap;background:#f8faff;border:1px solid var(--line);border-radius:14px;padding:15px;line-height:1.9;margin-top:12px}.finish{text-align:center;padding:25px 0 8px}.finish h2{font-size:clamp(27px,4vw,36px);color:var(--navy)}.big-score{font-weight:900;font-size:52px;color:var(--blue)}
+@media(max-width:780px){.topic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stage-head{flex-direction:column}.count-pill{align-self:flex-start}}
+@media(max-width:480px){.app{padding:10px 10px 30px}.top{align-items:flex-start}.brand{font-size:16px}.score{font-size:13px;padding:7px 10px}.panel{border-radius:18px;padding:16px}.topic-grid{gap:8px}.topic{padding:11px;min-height:120px}.topic strong{font-size:14px}.prompt{font-size:19px}.actions .btn{flex:1}.stage-chip{font-size:12px;padding:6px 8px}.word-select{min-width:110px}}
+
+/* v5: bright, playful classroom mission-board redesign */
+:root{--ink:#29314f;--navy:#5635a8;--blue:#4569dc;--paper:#fff;--bg:#fff5de;--line:#e3d9ff;--sky:#e9f5ff;--mint:#e7fff2;--green:#16754d;--sun:#fff2b8;--orange:#905114;--pink:#fff0f6;--red:#a23d4b;--purple:#f2e9ff}
+body{background:radial-gradient(circle at 5% 5%,#ffcae1 0,transparent 24%),radial-gradient(circle at 96% 18%,#c8f5ff 0,transparent 22%),radial-gradient(circle at 76% 92%,#d9ffd9 0,transparent 20%),linear-gradient(135deg,#fff4d5,#f8efff 60%,#e9faff);color:var(--ink)}
+.app{max-width:1120px;padding:18px 18px 46px}
+.top{background:linear-gradient(105deg,#6d47d9 0%,#8b4de0 42%,#ee5eab 100%);border:3px solid #fff;border-radius:24px;padding:13px 17px;box-shadow:0 8px 0 #d7c5ff,0 13px 24px #5b3f9e20;margin-bottom:25px}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;font-size:clamp(18px,2.7vw,25px);font-weight:1000;letter-spacing:-.4px;text-shadow:0 2px 0 #5635a855}
+.brand-mark{display:grid;place-items:center;width:44px;height:44px;border-radius:15px;background:#fff;color:#7d47d7;font-size:25px;text-shadow:none;box-shadow:0 3px 0 #e4d5ff}
+.score{background:#fff1a8;border:2px solid #fff;border-radius:17px;padding:8px 13px;color:#6b398e;font-weight:1000;box-shadow:0 3px 0 #d9a9f0}
+.panel{background:#fff;border:3px solid #fff;border-radius:30px;padding:clamp(18px,4vw,36px);box-shadow:0 9px 0 #ded0ff,0 18px 32px #5434a01a}
+.hero{position:relative;overflow:hidden;text-align:center;padding-top:clamp(27px,5vw,46px);padding-bottom:30px;background:linear-gradient(135deg,#fff0a7 0%,#ffdaec 45%,#d9f5ff 100%)}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;pointer-events:none;opacity:.7;z-index:0}
+.hero:before{width:170px;height:170px;background:#fff8ce;top:-80px;left:-35px;border:12px solid #ffadcd}
+.hero:after{width:140px;height:140px;background:#cbffe9;bottom:-75px;right:-20px;border:10px solid #a9d3ff}
+.hero>*{position:relative;z-index:1}
+.eyebrow{display:inline-block;border:2px solid #fff;border-radius:99px;background:#7746d6;color:#fff;font-weight:1000;font-size:14px;padding:7px 15px;box-shadow:0 4px 0 #c4a8ff;letter-spacing:.2px}
+.hero h1{font-size:clamp(29px,5vw,47px);line-height:1.28;color:#482879;margin:17px 0 12px;text-shadow:0 2px 0 #ffffff80;letter-spacing:-1px}
+.lead{color:#4d5274;font-size:clamp(16px,2vw,19px);font-weight:700;max-width:730px;margin:0 auto}
+.topic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:29px 0 20px}
+.topic{position:relative;overflow:hidden;min-height:178px;text-align:left;border:3px solid #fff;border-radius:25px;padding:18px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 6px 0 #b5a7d8;transition:transform .16s,box-shadow .16s,filter .16s}
+.topic:after{content:"→";position:absolute;right:17px;bottom:13px;width:35px;height:35px;display:grid;place-items:center;border-radius:50%;background:#ffffffb8;color:#4d3677;font-size:23px;font-weight:1000}
+.topic:hover{transform:translateY(-4px) rotate(-.5deg);box-shadow:0 10px 0 #b5a7d8;filter:saturate(1.1)}
+.topic:nth-child(4n+1){background:linear-gradient(135deg,#c9fff0,#76ead6);color:#204f50;box-shadow:0 6px 0 #77cabd}
+.topic:nth-child(4n+2){background:linear-gradient(135deg,#ffd7e7,#ffa9c9);color:#6f2851;box-shadow:0 6px 0 #e88cb1}
+.topic:nth-child(4n+3){background:linear-gradient(135deg,#d6e4ff,#9ab9ff);color:#263b7a;box-shadow:0 6px 0 #8aa6eb}
+.topic:nth-child(4n+4){background:linear-gradient(135deg,#fff1ad,#ffc86c);color:#6d461b;box-shadow:0 6px 0 #e8b356}
+.emoji{display:grid;place-items:center;width:63px;height:63px;border-radius:20px;background:#ffffffbd;border:2px solid #fff;font-size:38px;line-height:1;margin-bottom:12px;box-shadow:0 3px 0 #ffffff88}
+.topic strong{display:block;max-width:85%;font-size:clamp(17px,2.4vw,21px);line-height:1.38;font-weight:1000;letter-spacing:-.4px}
+.topic small{display:block;color:inherit;opacity:.8;font-size:13px;font-weight:850;margin-top:6px}
+.teacher-tip{background:#fff8c9;border:2px dashed #e6b747;border-radius:18px;padding:14px 16px;text-align:left;color:#654c22;font-size:14px;margin:22px auto 0;max-width:850px;box-shadow:0 4px 0 #f7d98a}
+.btn{border:0;border-radius:16px;padding:12px 18px;font-weight:1000;letter-spacing:.1px;box-shadow:0 4px 0 #00000016;transition:transform .12s,filter .12s,box-shadow .12s}
+.btn:active{transform:translateY(3px) scale(.99);box-shadow:0 1px 0 #00000016}
+.primary{background:linear-gradient(100deg,#7047d9,#a048dc 55%,#e753a6);color:#fff;box-shadow:0 5px 0 #bd94e7}
+.primary:hover{filter:brightness(1.06)}
+.secondary{background:linear-gradient(100deg,#fff1a5,#ffd36e);color:#664615;box-shadow:0 5px 0 #e6b75d}
+.secondary:hover{filter:brightness(1.03)}
+.outline{border:2px solid #cdbdff;background:#fff;color:#5a3aa5}
+.stagebar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 16px}
+.stage-chip{background:#fff;border:2px solid #e3d7ff;border-radius:15px;padding:10px 8px;color:#716c91;font-size:12px;font-weight:1000;text-align:center;box-shadow:0 3px 0 #e8ddff}
+.stage-chip.current{background:linear-gradient(135deg,#7047d9,#a64cda);border-color:#fff;color:#fff;box-shadow:0 5px 0 #d09cef,0 7px 12px #643cc51c;transform:translateY(-2px)}
+.stage-chip.done{background:linear-gradient(135deg,#c6ffe3,#91edc2);border-color:#fff;color:#176044;box-shadow:0 3px 0 #80d8ae}
+.progress{height:13px;border-radius:99px;background:#fff;border:2px solid #fff;overflow:hidden;margin-bottom:22px;box-shadow:0 3px 0 #d9ccf9}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ff70ad 0%,#ffca54 27%,#71dfbe 54%,#6ec4ff 77%,#9a76f5 100%);width:0;transition:width .25s;border-radius:99px}
+#work .panel{border:3px solid #fff;border-top:9px solid #ff80b9;background:linear-gradient(180deg,#fff 0%,#fff 87%,#fff6fb 100%);box-shadow:0 9px 0 #e4c7ff,0 18px 32px #5434a01a}
+.stage-head h2{font-size:clamp(25px,3.8vw,34px);line-height:1.3;margin:9px 0 5px;color:#5930a6;letter-spacing:-.5px}
+.muted{color:#656987;font-weight:700;margin:0}
+.count-pill{background:#fff0a8;color:#784c19;border:2px solid #fff;border-radius:14px;padding:8px 12px;font-size:13px;font-weight:1000;box-shadow:0 4px 0 #f2d36d;white-space:nowrap}
+.prompt{font-size:clamp(19px,2.5vw,23px);font-weight:1000;line-height:1.5;margin:24px 0 12px;padding:14px 16px;border-radius:18px;background:#fff2b8;border-left:7px solid #ffbd4b;color:#543b77;box-shadow:0 4px 0 #f4dd8d}
+.hint{border-left:0;border-radius:16px;padding:12px 15px;color:#435276;margin:13px 0;background:#eaf5ff;border:2px solid #d7ebff;font-weight:650}
+.options{display:grid;gap:11px;margin:18px 0}
+.option{display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;border:2px solid #e6dcff;border-radius:17px;background:#fff;padding:13px 15px;font-weight:800;line-height:1.6;box-shadow:0 3px 0 #e6dcff;transition:transform .13s,border-color .13s,background .13s}
+.option:nth-child(4n+1){background:#f2fff9}.option:nth-child(4n+2){background:#fff4f8}.option:nth-child(4n+3){background:#f3f6ff}.option:nth-child(4n+4){background:#fff9df}
+.option:hover:not(:disabled){border-color:#a38ae8;transform:translateY(-2px);box-shadow:0 5px 0 #ded1fa}
+.option:disabled{cursor:default}
+.option.correct{border-color:#44c991;background:#dffff0;box-shadow:0 3px 0 #a3e9c5}
+.option.wrong{border-color:#ff8daa;background:#ffe8ed;box-shadow:0 3px 0 #ffc1d1}
+.letter{width:31px;height:31px;flex-shrink:0;display:grid;place-items:center;background:#dfd2ff;border-radius:11px;font-weight:1000;color:#5536a1}
+.option:nth-child(4n+2) .letter{background:#ffcfe0;color:#8e315b}.option:nth-child(4n+3) .letter{background:#cfddff;color:#2e4c9b}.option:nth-child(4n+4) .letter{background:#ffdf81;color:#754a14}
+.feedback{display:none;border-radius:16px;padding:14px 16px;margin:15px 0;font-weight:850;border:2px solid transparent}
+.feedback.show{display:block}.feedback.good{background:#dffff0;color:#176448;border-color:#8de1b6}.feedback.try{background:#fff2bf;color:#83551a;border-color:#f2ce68}
+.actions{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-top:22px}.actions .spacer{flex:1}
+.paragraph-card{border:2px solid #d3e8ff;background:#eef8ff;border-radius:20px;padding:15px;margin:16px 0;box-shadow:0 4px 0 #d3e8ff}
+.paragraph-line{padding:11px 13px;border-bottom:2px dashed #d5ddf2;background:#fff;border-radius:11px;margin:7px 0;color:#343c5d}.paragraph-line:last-child{border-bottom:0}
+.word-select{border:2px solid #b8a4f2;background:#fff;border-radius:12px;padding:8px 10px;min-width:124px;font-weight:1000;color:#5836a6;margin-right:6px;box-shadow:0 2px 0 #e1d7ff}
+.mini-label{font-size:13px;font-weight:1000;color:#6443ad;display:inline-block;margin-bottom:5px}
+.compare-card{display:grid;gap:10px;margin:16px 0}.sample{background:#effff7;border:2px solid #bfe9d1;border-radius:16px;padding:14px;font-weight:800}.sample.bad{background:#fff4de;border-color:#f6d48b}.sample.good{background:#e8fff4;border-color:#b5ebcc}
+.write-intro{background:linear-gradient(110deg,#e3f5ff,#f0e5ff,#ffe4f1);color:#4d367d;border:2px solid #fff;border-radius:17px;padding:14px 16px;margin:14px 0;font-weight:750}
+.write-field{background:#f5faff;border:2px solid #d5e8ff;border-radius:18px;padding:14px;margin:13px 0;box-shadow:0 3px 0 #deefff}
+.write-field:nth-child(4n+2){background:#fff4f8;border-color:#ffd3e3;box-shadow:0 3px 0 #ffe0eb}.write-field:nth-child(4n+3){background:#f4fff6;border-color:#c5efd1;box-shadow:0 3px 0 #d7f4df}.write-field:nth-child(4n+4){background:#fffbe9;border-color:#f7e6a9;box-shadow:0 3px 0 #faedc4}
+.write-field label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:1000;margin-bottom:9px;color:#51318f}
+.order-label{background:#e4d9ff;color:#5436a4;border-radius:99px;padding:4px 10px;font-size:13px;white-space:nowrap}
+.write-field textarea{width:100%;min-height:75px;resize:vertical;border:2px solid #d9dff0;border-radius:13px;padding:12px 13px;background:#fff;line-height:1.7;color:#29314f}
+.write-field textarea:focus{border-color:#956ee8;outline:3px solid #e4d9ff}
+.write-field textarea::placeholder{color:#98a0b4}
+.marker-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px}.marker-row label{margin:0}.marker-row select{border:2px solid #c9b9f9;border-radius:11px;padding:7px 9px;background:#fff;color:#5836a6;font-weight:900}
+.rubric{display:grid;gap:9px;margin:15px 0}.rubric-item{border:2px solid #e6defa;border-radius:14px;padding:12px 14px;background:#fff;font-weight:750}.rubric-item.ok{background:#e3fff0;border-color:#9be2bc}.rubric-item.fix{background:#fff5ce;border-color:#f2d982}
+.draft{white-space:pre-wrap;background:linear-gradient(135deg,#fff8df,#f4efff);border:2px dashed #b9a2f3;border-radius:17px;padding:16px;line-height:1.95;margin-top:12px;color:#34304d}
+.finish{text-align:center;padding:28px 0 12px;background:linear-gradient(135deg,#fff0a8,#ffdeee 45%,#daf5ff);border:3px solid #fff;border-radius:30px;box-shadow:0 9px 0 #d8c6ff,0 18px 32px #5434a01a}
+.finish h2{font-size:clamp(28px,4vw,38px);color:#5930a6}.big-score{font-weight:1000;font-size:clamp(48px,7vw,60px);color:#e349a4;text-shadow:0 3px 0 #ffd5e7}
+.finish .teacher-tip{background:#fff;border-color:#e5c9ff;color:#4c4272;box-shadow:0 4px 0 #e5d7ff}
+@media(max-width:780px){.stagebar{grid-template-columns:repeat(2,minmax(0,1fr))}.stage-chip:last-child{grid-column:1/-1}.stage-head{flex-direction:column}.count-pill{align-self:flex-start}}
+@media(max-width:520px){.app{padding:10px 10px 34px}.top{align-items:center;padding:10px 11px;border-radius:19px}.brand{font-size:16px;gap:7px}.brand-mark{width:34px;height:34px;border-radius:11px;font-size:20px}.score{font-size:13px;padding:7px 9px}.panel{border-radius:22px;padding:15px}.topic-grid{grid-template-columns:1fr;gap:12px}.topic{min-height:145px;padding:14px;border-radius:20px}.topic strong{font-size:18px}.emoji{width:54px;height:54px;font-size:32px}.prompt{font-size:19px;padding:12px}.actions .btn{flex:1}.stage-chip{font-size:12px;padding:8px 6px}.word-select{min-width:110px}.hero h1{letter-spacing:-.7px}}
+
+
+/* v6: 차분한 색감 + 보기 색 통일 */
+body{background:radial-gradient(circle at 7% 0%,#eef1ff 0,transparent 27%),#f7f8fc;color:#303950}
+.top{background:#5d6197;border:2px solid #fff;border-radius:21px;padding:12px 16px;box-shadow:0 5px 0 #d9dcef,0 10px 22px #33406412}
+.brand{color:#fff;text-shadow:none}
+.brand-mark{background:#f0efff;color:#555b98;box-shadow:none}
+.score{background:#fff;border:1px solid #e1e5f0;color:#565b8c;box-shadow:none}
+.panel{border:1px solid #e5e8f1;border-radius:25px;box-shadow:0 8px 24px #33406410}
+.hero{background:linear-gradient(135deg,#f1efff 0%,#f2f7ff 100%);}
+.hero:before,.hero:after{opacity:.18;border-width:7px}
+.eyebrow{background:#e8e9fb;border:1px solid #d9dcf5;color:#555b98;box-shadow:none}
+.hero h1{color:#4c527f;text-shadow:none}
+.lead{color:#5f6b83}
+.topic{background:#fff!important;color:#303950!important;border:2px solid #e0e5ef!important;border-radius:20px;box-shadow:0 4px 0 #e8ebf3!important;}
+.topic:after{background:#eef0fb;color:#5d6197}
+.topic:hover{background:#f8f9ff!important;border-color:#adb7e0!important;box-shadow:0 6px 0 #e3e7f3!important;filter:none;transform:translateY(-2px)}
+.emoji{background:#f0f2fb;border:1px solid #e4e7f3;box-shadow:none}
+.teacher-tip{background:#f4f7ff;border:1px solid #e1e7f4;color:#53617d;box-shadow:none}
+.btn{box-shadow:none;border-radius:13px}
+.primary{background:#5d6197;color:#fff;box-shadow:0 3px 0 #e0e2f2}
+.primary:hover{filter:brightness(1.05)}
+.secondary{background:#e9edf7;color:#455170;box-shadow:0 3px 0 #dce2ef}
+.outline{border:1px solid #d6dced;background:#fff;color:#505889}
+.stage-chip{background:#fff;border:1px solid #e0e5ef;color:#738098;box-shadow:none;border-radius:12px}
+.stage-chip.current{background:#5d6197;border-color:#5d6197;color:#fff;box-shadow:0 3px 0 #d9dcef;transform:none}
+.stage-chip.done{background:#eaf6ef;border-color:#d2eadb;color:#3e7958;box-shadow:none}
+.progress{height:9px;background:#e7eaf3;border:0;box-shadow:none}
+.progress-fill{background:linear-gradient(90deg,#7c86bf,#9cc8b7);border-radius:99px}
+#work .panel{border:1px solid #e5e8f1;border-top:5px solid #a8afd9;background:#fff;box-shadow:0 8px 24px #33406410}
+.stage-head h2{color:#505889}
+.count-pill{background:#f0f0fb;color:#555b8c;border:1px solid #dfe1f4;box-shadow:none;border-radius:11px}
+.prompt{background:#f0f2fc;border-left:5px solid #919bd0;color:#414b79;box-shadow:none;border-radius:13px}
+.hint{background:#f6f8fc;border:1px solid #e5eaf3;color:#53617b;border-radius:12px}
+.options .option,.options .option:nth-child(4n+1),.options .option:nth-child(4n+2),.options .option:nth-child(4n+3),.options .option:nth-child(4n+4){background:#f7f8fc;border:1px solid #dfe4ee;color:#333d55;box-shadow:none;border-radius:13px;}
+.options .option:hover:not(:disabled){background:#f0f3fb;border-color:#aeb8d9;transform:translateY(-1px);box-shadow:none}
+.options .letter,.options .option:nth-child(4n+2) .letter,.options .option:nth-child(4n+3) .letter,.options .option:nth-child(4n+4) .letter{background:#e8eafa;color:#535b91;border-radius:9px}
+.options .option.correct{background:#e8f6ed;border-color:#95cda8;box-shadow:none}
+.options .option.wrong{background:#fff0f1;border-color:#e5acb2;box-shadow:none}
+.feedback.good{background:#edf8f0;color:#326c49;border-color:#cce8d4}
+.feedback.try{background:#fff8e8;color:#805e24;border-color:#efdfb7}
+.paragraph-card{border:1px solid #e0e6f1;background:#f7f9fd;box-shadow:none;border-radius:15px}
+.paragraph-line{border-bottom:1px dashed #dce3ef;color:#37415a}
+.word-select{border:1px solid #cfd7e8;color:#505889;box-shadow:none;border-radius:9px}
+.mini-label{color:#5d6698}
+.sample{background:#f5f8fc;border:1px solid #e0e6ef}
+.sample.bad{background:#fff8ec;border-color:#eee0c5}
+.sample.good{background:#eff8f2;border-color:#d2e9d8}
+.write-intro{background:#f0f4fc;color:#45547d;border:1px solid #e0e7f3;box-shadow:none}
+.write-field,.write-field:nth-child(4n+2),.write-field:nth-child(4n+3),.write-field:nth-child(4n+4){background:#fbfcfe;border:1px solid #e1e6ef;box-shadow:none;border-radius:14px}
+.write-field label{color:#4c567f}
+.order-label{background:#e9ecfa;color:#515a8c}
+.write-field textarea{border:1px solid #d7deeb;border-radius:10px}
+.write-field textarea:focus{border-color:#929dd0;outline:3px solid #eef0fc}
+.marker-row select{border:1px solid #cfd7e8;color:#505889}
+.rubric-item{border:1px solid #e1e6ef}
+.rubric-item.ok{background:#edf8f0;border-color:#cbe7d4}
+.rubric-item.fix{background:#fff8e8;border-color:#efdfb7}
+.draft{background:#f7f8fc;border:1px solid #dfe4ee;color:#37415a}
+.finish{background:linear-gradient(135deg,#f2f0ff,#f2f8ff);border:1px solid #e0e5f1;box-shadow:0 8px 24px #33406410}
+.finish h2{color:#505889}.big-score{color:#6571b0;text-shadow:none}
+.finish .teacher-tip{background:#fff;border-color:#e3e7f0;color:#4f5b79;box-shadow:none}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand"><span class="brand-mark">🌈</span><span>알록달록 설명서 탐험대</span></div><div class="score">⭐ 모은 별 <span id="score">0</span></div></header>
+<section id="home" class="screen active">
+ <div class="panel hero">
+  <span class="eyebrow">✨ 오늘의 글쓰기 탐험</span>
+  <h1>읽는 사람이 척척 따라 할 수 있게!<br>나만의 설명서를 만들어요</h1>
+  <p class="lead">고르고 · 고쳐 보고 · 직접 써 보면서 설명하는 힘을 키워요!</p>
+  <div id="topicGrid" class="topic-grid"></div>
+  <button id="randomTopic" class="btn primary wide">🎲 주제를 골라 바로 시작하기</button>
+  <div class="teacher-tip"><strong>오늘의 편집 약속</strong><br>① 처음에는 무엇을 알려 줄지 소개해요. ② 가운데에는 해야 할 일을 차례대로 써요. ③ 끝에서는 내용을 정리해요.<br>‘먼저’와 ‘첫째’처럼 순서를 나타내는 말은 여러 가지로 쓸 수 있어요.</div>
+ </div>
+</section>
+<section id="work" class="screen">
+ <div id="stagebar" class="stagebar"></div><div class="progress"><div id="progressFill" class="progress-fill"></div></div>
+ <div class="panel"><div class="stage-head"><div><span id="stageEyebrow" class="eyebrow"></span><h2 id="stageTitle"></h2><p id="stageSub" class="muted"></p></div><div id="stageCount" class="count-pill"></div></div>
+  <div id="stageContent"></div><div id="stageFeedback" class="feedback"></div><div id="stageActions" class="actions"></div>
+ </div>
+</section>
+<section id="done" class="screen"><div class="panel finish"><span class="eyebrow">미션 완료</span><h2>설명서 편집을 끝냈어요!</h2><div class="big-score"><span id="finalScore">0</span>점</div><p id="finalMessage" class="lead"></p><div class="teacher-tip" style="text-align:left"><strong>마지막으로 확인해요</strong><br>• 처음 문장에 무엇을 알려 줄지 나타났나요?<br>• 해야 할 일을 빠짐없이 차례대로 썼나요?<br>• 순서말을 알맞게 사용했나요?<br>• 마지막 문장으로 내용을 정리했나요?</div><div class="actions" style="justify-content:center;margin-top:22px"><button id="newTopic" class="btn primary">다른 주제로 도전하기</button><button id="homeBtn" class="btn secondary">주제 고르기로 돌아가기</button></div></div></section>
+</div>
+<script>
+const DATA = {
+ "책가방 준비하는 방법": {emoji:"🎒",intro:"오늘은 학교에 가기 전에 책가방을 준비하는 방법을 알려 드리겠습니다.",steps:["내일의 시간표를 보고 필요한 과목을 확인합니다.","필요한 교과서와 공책을 책상 위에 모읍니다.","큰 책과 공책부터 가방 안에 차례로 넣습니다.","필통과 준비물을 넣고 빠진 것이 없는지 확인합니다."],end:"전날 책가방을 준비하면 아침에 여유롭게 학교에 갈 수 있습니다."},
+ "손 씻는 방법": {emoji:"🧼",intro:"손을 깨끗하게 씻는 방법을 차례대로 알려 드리겠습니다.",steps:["흐르는 물에 두 손을 적십니다.","비누를 묻혀 손바닥과 손등을 문지릅니다.","손가락 사이와 손톱 주변도 꼼꼼하게 문지릅니다.","흐르는 물에 비누를 헹구고 깨끗한 수건으로 손을 닦습니다."],end:"이 순서대로 손을 씻으면 손을 깨끗하게 유지할 수 있습니다."},
+ "샌드위치 만드는 방법": {emoji:"🥪",intro:"간단한 샌드위치를 만드는 방법을 알려 드리겠습니다.",steps:["식빵과 씻은 채소, 치즈 등 재료를 준비합니다.","식빵 한 장 위에 준비한 재료를 올립니다.","원한다면 소스를 조금 바릅니다.","다른 식빵 한 장을 덮고 먹기 좋게 자릅니다."],end:"이 순서대로 하면 간단하고 맛있는 샌드위치를 만들 수 있습니다."},
+ "책상 정리하는 방법": {emoji:"🧹",intro:"공부하기 편하도록 책상을 정리하는 방법을 알려 드리겠습니다.",steps:["책상 위에 있는 물건을 모두 살펴봅니다.","쓰레기와 필요 없는 종이를 버립니다.","책과 공책, 필통을 종류별로 모읍니다.","자주 쓰는 물건을 손이 잘 닿는 곳에 놓습니다."],end:"책상을 정리해 두면 필요한 물건을 쉽게 찾을 수 있습니다."}
+};
+const MARKERS=[['먼저','첫째'],['다음으로','둘째'],['그다음','셋째'],['마지막으로','넷째']];
+const STAGES=['첫 문장 골라 보기','순서말 기차','친절한 설명 고르기','마무리 문장 찾기','내 설명서 만들기'];
+const $=id=>document.getElementById(id);let topicName='',data=null,stageIndex=0,score=0,stageDone=false,reviewAttemptAwarded=false;
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;}
+function addScore(n){score+=n;$('score').textContent=score;}
+function buildTopics(){const grid=$('topicGrid');grid.innerHTML='';Object.keys(DATA).forEach(name=>{const b=document.createElement('button');b.className='topic';b.innerHTML=`<span class="emoji">${DATA[name].emoji}</span><strong>${name}</strong><small>이 주제로 편집하기 →</small>`;b.onclick=()=>startTopic(name);grid.appendChild(b);});}
+$('randomTopic').onclick=()=>{const keys=Object.keys(DATA);startTopic(keys[Math.floor(Math.random()*keys.length)]);};
+function startTopic(name){topicName=name;data=DATA[name];reviewAttemptAwarded=false;score=0;$('score').textContent='0';stageIndex=0;showScreen('work');renderStage();}
+function setStageHead(){ $('stageEyebrow').textContent=`선택한 주제 · ${topicName}`;$('stageTitle').textContent=STAGES[stageIndex];$('stageSub').textContent=['처음에 어떤 문장을 쓰면 좋을지 골라 봐요.','방법을 차례대로 설명하는 데 도움이 되는 말을 채워요.','친구가 쉽게 따라 할 수 있는 자세한 문장을 찾아요.','글을 읽고 끝에 어울리는 문장을 골라요.','내가 설명하고 싶은 방법을 내 말로 써 봐요.'][stageIndex];$('stageCount').textContent=`미션 ${stageIndex+1} / 5`;$('progressFill').style.width=(stageIndex/5*100)+'%';const bar=$('stagebar');bar.innerHTML='';STAGES.forEach((s,i)=>{const span=document.createElement('span');span.className='stage-chip'+(i===stageIndex?' current':i<stageIndex?' done':'');span.textContent=(i<stageIndex?'✓ ':'')+(i+1)+'. '+s;bar.appendChild(span);});$('stageContent').innerHTML='';$('stageFeedback').className='feedback';$('stageFeedback').textContent='';$('stageActions').innerHTML='';stageDone=false;}
+function actionButton(text,cls,fn){const b=document.createElement('button');b.className='btn '+cls;b.textContent=text;b.onclick=fn;$('stageActions').appendChild(b);return b;}
+function setFeedback(msg,type='good'){const f=$('stageFeedback');f.className='feedback show '+type;f.textContent=msg;}
+function nextAction(){const actions=$('stageActions');actions.innerHTML='';actionButton(stageIndex===4?'완성한 글 보기':'다음 미션 →','primary',()=>{if(stageIndex<4){stageIndex++;renderStage();}else finish();});}
+function completeStage(points,msg){if(stageDone)return;stageDone=true;addScore(points);setFeedback(msg,'good');nextAction();}
+function renderStage(){setStageHead();if(stageIndex===0)renderOpeningStage();else if(stageIndex===1)renderMarkerStage();else if(stageIndex===2)renderSpecificStage();else if(stageIndex===3)renderEndingStage();else renderWriteStage();}
+function addOptions(box,opts,onChoose){shuffle(opts).forEach((o,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML=`<span class="letter">${String.fromCharCode(65+i)}</span><span>${o.text}</span>`;b.onclick=()=>{if(box.dataset.answered==='1')return;box.dataset.answered='1';[...box.querySelectorAll('button')].forEach(x=>x.disabled=true);onChoose(o,b,box);};box.appendChild(b);});}
+// Mission 1: choose a suitable opening sentence rather than classify a sentence label.
+function renderOpeningStage(){const c=$('stageContent');c.innerHTML=`<p class="prompt">다음 중 처음에 쓰면 가장 좋을 문장은 무엇일까요?</p><div class="hint">읽는 사람이 “무엇을 알려 주려는 글이지?” 하고 궁금해하지 않도록, 글의 주제를 소개해 주세요.</div><div id="openingOptions" class="options"></div>`;const box=$('openingOptions');const opts=[{text:data.intro,ok:true,why:'맞아요! 무엇에 대한 설명인지 처음부터 알려 주고 있어요.'},{text:'먼저, '+data.steps[0],ok:false,why:'이 문장은 방법을 설명하는 문장이에요. 그보다 먼저 어떤 방법을 알려 줄지 소개해요.'},{text:data.end,ok:false,why:'이 문장은 설명을 마무리하는 데 어울려요. 처음에는 주제를 먼저 알려 주세요.'}];addOptions(box,opts,(o,b)=>{if(o.ok){b.classList.add('correct');addScore(10);setFeedback('✅ '+o.why,'good');}else{b.classList.add('wrong');box.querySelectorAll('.option').forEach(x=>{if(x.textContent.includes(data.intro))x.classList.add('correct')});setFeedback('💡 '+o.why,'try');}stageDone=true;nextAction();});}
+// Mission 2: complete all four sequence-word blanks in a connected paragraph.
+function renderMarkerStage(){const c=$('stageContent');c.innerHTML=`<p class="prompt">설명서 속 빈칸에 순서말을 넣어 기차를 이어 주세요.</p><div class="hint">‘먼저/첫째’, ‘다음으로/둘째’처럼 다른 표현도 쓸 수 있어요. ‘그리고’는 여러 곳에 쓸 수 있지만, 순서를 분명하게 알려 주는 말인지 생각해 보세요.</div><div id="markerRows" class="paragraph-card"></div><div class="hint">각 칸에서 알맞은 말을 고른 뒤, 아래의 확인 버튼을 눌러요.</div>`;const rows=$('markerRows');data.steps.forEach((s,i)=>{const row=document.createElement('div');row.className='paragraph-line';row.innerHTML=`<div class="mini-label">방법 ${i+1}</div><div><select class="word-select" id="word-${i}" aria-label="${i+1}번째 순서말"><option value="">순서말 고르기</option>${['먼저','첫째','다음으로','둘째','그다음','셋째','마지막으로','넷째','그리고'].map(w=>`<option>${w}</option>`).join('')}</select>${s}</div>`;rows.appendChild(row);});actionButton('순서말 확인하기','primary',()=>{const vals=data.steps.map((_,i)=>$('word-'+i).value);const accepted=vals.map((v,i)=>MARKERS[i].includes(v));const correct=accepted.filter(Boolean).length;data.steps.forEach((_,i)=>{$('word-'+i).style.borderColor=accepted[i]?'#6aba91':'#e0ac63';});if(correct===4){setFeedback('🎉 네 칸 모두 잘 골랐어요! 순서가 또렷하게 드러나요.','good');if(!stageDone){addScore(15);stageDone=true;}nextAction();}else{setFeedback(`거의 다 왔어요! ${correct}/4개가 알맞아요. 초록색 칸은 잘 골랐고, 다른 칸은 다시 살펴보세요. ‘그리고’보다 순서를 분명히 알려 주는 말을 골라 보세요.`,'try');const act=$('stageActions');act.innerHTML='';actionButton('다시 확인하기','secondary',()=>renderMarkerStage());actionButton('다음 미션으로','primary',()=>{stageDone=true;nextAction();});}});}
+// Mission 3: select a clear, actionable instruction over vague wording.
+function renderSpecificStage(){const c=$('stageContent');c.innerHTML=`<p class="prompt">친구가 그대로 따라 하려면 어떤 문장이 더 도움이 될까요?</p><div class="hint">“잘해요”, “잘 준비해요”처럼 두루뭉술한 말보다, 무엇을 어떻게 해야 하는지 알려 주는 문장이 좋아요.</div><div class="compare-card"><div class="sample bad"><span class="mini-label">조금 더 고쳐야 하는 문장</span><br>다음으로, 그것을 잘 준비합니다.</div><div class="sample"><span class="mini-label">아래에서 더 친절한 문장을 골라 보세요.</span></div></div><div id="specificOptions" class="options"></div>`;const box=$('specificOptions');const opts=[{text:'다음으로, 그것을 잘 준비합니다.',ok:false,why:'무엇을 해야 하는지 자세히 알기 어려워요.'},{text:'다음으로, '+data.steps[1],ok:true,why:'맞아요! 실제로 해야 할 행동이 구체적으로 드러나요.'},{text:'마지막으로, 이제 다 끝났습니다.',ok:false,why:'마지막을 알리는 말은 있지만, 어떤 행동을 해야 하는지는 알려 주지 않아요.'}];addOptions(box,opts,(o,b)=>{if(o.ok){b.classList.add('correct');addScore(10);setFeedback('✅ '+o.why,'good');}else{b.classList.add('wrong');box.querySelectorAll('.option').forEach(x=>{if(x.textContent.includes('다음으로, '+data.steps[1]))x.classList.add('correct')});setFeedback('💡 '+o.why+' 실제 행동을 자세히 알려 주는 문장을 골라 보세요.','try');}stageDone=true;nextAction();});}
+// Mission 4: choose an appropriate ending sentence in context.
+function renderEndingStage(){const c=$('stageContent');c.innerHTML=`<p class="prompt">방법을 모두 설명했어요. 어떤 문장으로 끝내면 좋을까요?</p><div class="paragraph-card"><div class="mini-label">지금까지 쓴 설명</div><div class="paragraph-line">${data.intro}</div><div class="paragraph-line">먼저, ${data.steps[0]}</div><div class="paragraph-line">다음으로, ${data.steps[1]}</div><div class="paragraph-line">그다음, ${data.steps[2]}</div><div class="paragraph-line">마지막으로, ${data.steps[3]}</div><div class="paragraph-line" style="color:#557dc4;font-weight:900">↓ 여기에 들어갈 마지막 문장을 골라요.</div></div><div id="endingOptions" class="options"></div>`;const box=$('endingOptions');const opts=[{text:data.intro,ok:false,why:'처음에 주제를 소개하는 문장이에요. 지금은 설명한 내용을 정리해요.'},{text:data.end,ok:true,why:'맞아요! 방법을 설명한 뒤, 그 방법을 통해 무엇을 할 수 있는지 정리하고 있어요.'},{text:'먼저, '+data.steps[0],ok:false,why:'방법을 설명하는 문장이에요. 이미 방법을 모두 설명했으니 끝을 정리하는 문장을 골라요.'}];addOptions(box,opts,(o,b)=>{if(o.ok){b.classList.add('correct');addScore(10);setFeedback('✅ '+o.why,'good');}else{b.classList.add('wrong');box.querySelectorAll('.option').forEach(x=>{if(x.textContent.includes(data.end))x.classList.add('correct')});setFeedback('💡 '+o.why,'try');}stageDone=true;nextAction();});}
+function esc(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+// Mission 5: a single-page mini editor with student-selected sequence words and a checklist.
+function renderWriteStage(){
+ const c=$('stageContent');
+ c.innerHTML=`<p class="prompt">예시 문장을 따라 나만의 설명서를 완성해 봐요!</p><div class="hint">아래에 예시 문장이 먼저 적혀 있어요. 그대로 따라 써도 좋고, 내가 알고 있는 방법에 맞게 조금 바꾸어 써도 좋아요. 다 쓴 뒤에는 빠진 부분이 없는지 점검해요.</div><div class="write-intro"><strong>내가 고른 주제</strong> · ${topicName}<br>처음에는 무엇을 알려 줄지 소개하고, 가운데에는 할 일을 차례대로 쓰고, 끝에서는 내용을 정리해요.</div><div id="writeFields"></div><div class="actions"><button id="reviewDraft" class="btn primary">내 설명서 점검하기</button></div><div id="reviewArea"></div>`;
+ const fields=$('writeFields');
+ const intro=document.createElement('div');intro.className='write-field';
+ intro.innerHTML=`<label for="field-intro">처음에 쓸 문장 <span class="order-label">무엇을 알려 줄까요?</span></label><textarea id="field-intro" aria-label="처음에 쓸 문장"></textarea>`;
+ fields.appendChild(intro);$('field-intro').value=data.intro;
+ data.steps.forEach((s,i)=>{const div=document.createElement('div');div.className='write-field';div.innerHTML=`<div class="marker-row"><label for="field-s${i}">방법 ${i+1}</label><select id="marker-s${i}" aria-label="방법 ${i+1}에 쓸 순서말">${MARKERS[i].map(m=>`<option>${m}</option>`).join('')}</select></div><textarea id="field-s${i}" aria-label="방법 ${i+1} 예시 문장"></textarea>`;fields.appendChild(div);$('field-s'+i).value=s;});
+ const end=document.createElement('div');end.className='write-field';end.innerHTML=`<label for="field-end">끝에 쓸 문장 <span class="order-label">내용을 정리해요</span></label><textarea id="field-end" aria-label="끝에 쓸 문장"></textarea>`;fields.appendChild(end);$('field-end').value=data.end;
+ $('reviewDraft').onclick=reviewWriting;
+}
+function reviewWriting(){const intro=$('field-intro').value.trim();const steps=data.steps.map((_,i)=>$('field-s'+i).value.trim());const end=$('field-end').value.trim();const checks=[['처음 문장에서 무엇을 알려 줄지 소개했나요?',intro.length>=8&&(intro.includes('방법')||intro.includes('설명')||intro.includes('알려')||intro.includes(topicName.split(' ')[0]))],['첫 번째 해야 할 일을 썼나요?',steps[0].length>=5],['두 번째 해야 할 일을 썼나요?',steps[1].length>=5],['세 번째 해야 할 일을 썼나요?',steps[2].length>=5],['네 번째 해야 할 일을 썼나요?',steps[3].length>=5],['끝에서 내용을 정리했나요?',end.length>=8&&/(이렇게|할 수|완성|됩니다|있습니다|도움|좋습니다|기억|지킬 수|수 있습니다)/.test(end)]];const ok=checks.filter(x=>x[1]).length;if(!reviewAttemptAwarded){addScore(ok*3);reviewAttemptAwarded=true;}const area=$('reviewArea');area.innerHTML=`<h3 style="margin:19px 0 8px;color:var(--navy)">내 설명서 점검표 · ${ok}/6</h3><div class="rubric">${checks.map(x=>`<div class="rubric-item ${x[1]?'ok':'fix'}">${x[1]?'✅':'🟡'} ${x[0]}${x[1]?'':' — 문장을 더 쓰거나 다시 읽어 보세요.'}</div>`).join('')}</div><div class="hint">자동 점검은 문장의 뜻 전체를 이해하는 채점이 아니에요. 마지막에는 직접 읽으며 방법이 정확하고 순서가 자연스러운지 확인해요.</div><h3 style="margin:19px 0 8px;color:var(--navy)">완성한 설명서</h3><div id="draftPreview" class="draft"></div><div class="actions"><button id="editAgain" class="btn secondary">다시 고치기</button><button id="finishWriting" class="btn primary">이 글로 마무리하기</button></div>`;const lines=[intro,...steps.map((s,i)=>`${$('marker-s'+i).value}, ${s}`),end].filter(Boolean);$('draftPreview').textContent=lines.join('\n\n');$('editAgain').onclick=()=>{document.getElementById('writeFields').scrollIntoView({behavior:'smooth'});};$('finishWriting').onclick=()=>{addScore(10);setFeedback('글을 끝까지 완성했어요! 처음부터 끝까지 읽으며 순서가 자연스러운지 확인해 보세요.','good');$('stageActions').innerHTML='';actionButton('미션 완료하기','primary',finish);};}
+function finish(){$('finalScore').textContent=score;$('finalMessage').textContent=`${topicName} 주제로 설명서를 끝까지 만들었어요. 점수보다 중요한 것은 필요한 문장을 골라 보고, 순서와 표현을 살피며 직접 고쳐 본 경험이에요.`;showScreen('done');}
+$('newTopic').onclick=()=>showScreen('home');$('homeBtn').onclick=()=>showScreen('home');buildTopics();
+</script>
+</body>
+</html>
