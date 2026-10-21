@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#263c4b" />
+<title>그때목욕탕 퀴즈 대작전</title>
+<style>
+  :root {
+    --ink: #243746;
+    --muted: #71808a;
+    --paper: #fffdf7;
+    --cream: #f7f0df;
+    --teal: #4b9b96;
+    --teal-dark: #327b78;
+    --coral: #ef916f;
+    --gold: #f1c66d;
+    --lavender: #b8afd9;
+    --line: #e8e2d6;
+    --shadow: 0 18px 45px rgba(38,60,75,.10);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    background:
+      radial-gradient(circle at 10% 8%, rgba(241,198,109,.22), transparent 28rem),
+      radial-gradient(circle at 94% 28%, rgba(75,155,150,.16), transparent 26rem),
+      #f5f1e8;
+  }
+  button, input { font: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible { outline: 3px solid #f0b44a; outline-offset: 3px; }
+  .page-shell { width: min(1050px, calc(100% - 28px)); margin: 0 auto; padding: 20px 0 40px; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:0 auto 18px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:-.03em; }
+  .brand-mark { width:42px; height:42px; display:grid; place-items:center; background:var(--ink); color:white; border-radius:14px; box-shadow:0 7px 18px #24374625; font-size:22px; }
+  .brand-sub { display:block; color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.12em; margin-bottom:2px; }
+  .pill { display:inline-flex; align-items:center; gap:6px; background:#ffffffb8; border:1px solid var(--line); border-radius:999px; padding:8px 12px; color:#60717b; font-size:12px; font-weight:800; }
+  .screen { display:none; animation:fadeUp .35s ease both; }
+  .screen.active { display:block; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(9px); } to { opacity:1; transform:translateY(0); } }
+  .panel { background:var(--paper); border:1px solid #eae4d8; border-radius:28px; box-shadow:var(--shadow); overflow:hidden; }
+  .hero { display:grid; grid-template-columns:1.1fr .9fr; min-height:355px; }
+  .hero-copy { padding:clamp(26px,5vw,55px); display:flex; flex-direction:column; justify-content:center; }
+  .eyebrow { font-size:12px; font-weight:900; color:var(--teal-dark); letter-spacing:.08em; text-transform:uppercase; }
+  h1 { margin:14px 0 12px; font-size:clamp(32px,5vw,54px); line-height:1.12; letter-spacing:-.065em; }
+  h1 .accent { color:var(--teal-dark); }
+  .hero-copy p { margin:0; color:#657680; line-height:1.8; font-size:15px; max-width:450px; }
+  .hero-art { position:relative; display:grid; place-items:center; overflow:hidden; background:linear-gradient(145deg,#d8efea,#f6efd9); min-height:300px; }
+  .sun { position:absolute; width:210px; height:210px; border-radius:50%; background:#ffdf96; top:27px; right:14%; opacity:.72; }
+  .steam { position:absolute; top:28px; right:17%; font-size:32px; letter-spacing:7px; color:#6fa9a4; opacity:.8; transform:rotate(-15deg); }
+  .bath-illustration { position:relative; z-index:1; width:min(300px,85%); height:218px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+  .bubble { position:absolute; display:grid; place-items:center; border-radius:50%; background:#ffffffb8; border:1px solid white; box-shadow:0 8px 18px #3e696325; animation:float 3s ease-in-out infinite; }
+  .bubble.b1 { width:56px;height:56px;top:13px;left:17px;font-size:28px; animation-delay:-.7s; }
+  .bubble.b2 { width:43px;height:43px;top:52px;right:9px;font-size:22px; animation-delay:-1.8s; }
+  .bubble.b3 { width:33px;height:33px;top:94px;left:48px; animation-delay:-.3s; }
+  @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+  .tub { position:relative; width:245px; height:115px; background:#fffdf8; border:7px solid #6bb0ab; border-top:10px solid #6bb0ab; border-radius:20px 20px 56px 56px; box-shadow:inset 0 -12px 0 #e8f6f0, 0 16px 0 -7px #357a77; }
+  .tub:before { content:""; position:absolute; left:-13px;right:-13px;top:-13px;height:20px;border-radius:50%;background:#d7f1e9;border:6px solid #6bb0ab; }
+  .cat-face { position:absolute; font-size:72px; top:-76px; left:50%; transform:translateX(-50%); filter:drop-shadow(0 5px 0 #fff); }
+  .tub-leg { position:absolute; bottom:-17px; width:15px; height:22px; background:#357a77; border-radius:0 0 7px 7px; }
+  .tub-leg.left { left:23px; } .tub-leg.right { right:23px; }
+  .hero-tag { position:absolute; z-index:2; bottom:20px; right:20px; border-radius:14px; padding:9px 12px; background:#fffdf2; color:#876a35; font-weight:900; font-size:12px; transform:rotate(-4deg); box-shadow:0 6px 15px #24374616; }
+  .feature-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+  .feature { border:1px solid var(--line); border-radius:19px; padding:17px; background:#ffffffa8; display:flex; gap:12px; align-items:flex-start; }
+  .feature-icon { width:38px;height:38px; flex:0 0 38px; display:grid;place-items:center;border-radius:13px;background:#f7e7bd;font-size:20px; }
+  .feature:nth-child(2) .feature-icon { background:#d7eee8; } .feature:nth-child(3) .feature-icon { background:#e6e0f5; }
+  .feature strong { display:block; font-size:14px; margin:2px 0 5px; }
+  .feature small { display:block; font-size:12px; color:var(--muted); line-height:1.55; }
+  .start-bottom { display:flex; align-items:center; gap:14px; justify-content:space-between; padding:19px 22px; background:#fffdf9; border:1px solid var(--line); border-radius:20px; }
+  .player-name { min-width:0; flex:1; }
+  .player-name label { display:block; font-weight:900; font-size:12px; margin-bottom:8px; }
+  .player-name input { width:min(320px,100%); padding:12px 14px; border:1px solid #dcd6ca; border-radius:12px; background:#fff; color:var(--ink); }
+  .btn { border:0; border-radius:15px; padding:14px 20px; font-weight:900; transition:transform .15s,filter .15s,box-shadow .15s; }
+  .btn:hover { transform:translateY(-2px); filter:brightness(1.02); }
+  .btn:active { transform:translateY(0); }
+  .btn-primary { background:var(--ink); color:#fff; box-shadow:0 8px 0 #152936; }
+  .btn-primary:hover { box-shadow:0 10px 0 #152936; }
+  .btn-soft { background:#e6f3ef; color:#286b69; }
+  .btn-white { background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .small-note { font-size:11px; color:#8b969b; line-height:1.6; margin:14px 4px 0; }
+  .quiz-top { padding:23px 25px 16px; }
+  .quiz-meta { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; }
+  .progress-area { display:flex; gap:12px; align-items:center; flex:1; min-width:190px; }
+  .progress-track { height:9px; flex:1; max-width:450px; background:#ece8df; border-radius:50px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--teal),#8bc9b2); width:0%; border-radius:50px; transition:width .4s; }
+  .progress-label { font-size:12px; font-weight:900; color:#708089; white-space:nowrap; }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:20px; }
+  .stat { border-radius:15px; padding:11px 14px; background:#f7f4ec; display:flex; align-items:center; gap:10px; }
+  .stat-icon { font-size:20px; }
+  .stat small { display:block; color:#879197; font-size:10px; font-weight:800; margin-bottom:3px; }
+  .stat strong { font-size:18px; letter-spacing:-.03em; }
+  .question-content { padding:27px clamp(20px,4vw,45px) 35px; }
+  .question-tags { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:15px; }
+  .chapter-tag { background:#e0f1eb; color:#337873; border-radius:999px; padding:7px 11px; font-size:11px; font-weight:900; }
+  .type-tag { background:#f3e7d2; color:#94723c; border-radius:999px; padding:7px 11px; font-size:11px; font-weight:900; }
+  .q-number { color:#8e9ba0; font-size:12px; font-weight:900; margin-left:auto; }
+  .question-title { font-size:clamp(22px,3.5vw,31px); line-height:1.48; letter-spacing:-.04em; margin:0 0 11px; word-break:keep-all; }
+  .question-desc { color:#7e8b90; font-size:13px; margin:0 0 24px; }
+  .options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .option { min-height:72px; display:flex; align-items:center; gap:13px; text-align:left; border:1.5px solid #e8e4da; background:#fff; border-radius:17px; padding:15px 16px; color:var(--ink); font-weight:800; line-height:1.5; transition:all .16s; }
+  .option:hover:not(:disabled) { border-color:#8ac8bd; background:#f8fdf9; transform:translateY(-2px); }
+  .option .option-letter { width:31px;height:31px;flex:0 0 31px;border-radius:10px;background:#f3f0e8;display:grid;place-items:center;color:#697981;font-size:12px;font-weight:900; }
+  .option .option-text { flex:1; }
+  .option.correct { border-color:#54a68c; background:#e8f7ef; }
+  .option.correct .option-letter { background:#54a68c; color:#fff; }
+  .option.wrong { border-color:#e58c76; background:#fff0ea; }
+  .option.wrong .option-letter { background:#e58c76;color:white; }
+  .option:disabled { cursor:default; }
+  .hint-line { margin-top:17px; display:flex; justify-content:flex-start; }
+  .hint-btn { border:0; background:transparent; padding:7px 0; color:#788a91; font-size:12px; font-weight:900; }
+  .hint-box { display:none; margin-top:8px; background:#f4f0fa; border:1px solid #e3ddf1; padding:12px 14px; border-radius:13px; color:#645d7b; font-size:13px; line-height:1.6; }
+  .hint-box.show { display:block; }
+  .feedback { display:none; margin-top:18px; padding:16px 18px; border-radius:17px; line-height:1.65; font-size:14px; }
+  .feedback.show { display:block; animation:fadeUp .25s ease both; }
+  .feedback.good { background:#e9f7ef; border:1px solid #cbeadd; }
+  .feedback.bad { background:#fff0e9; border:1px solid #f4d5c8; }
+  .feedback strong { display:block; margin-bottom:5px; font-size:15px; }
+  .feedback .points { display:inline-block; margin-top:8px; padding:5px 9px; background:#ffffffb8; border-radius:999px; font-size:12px; font-weight:900; color:#2f746d; }
+  .question-footer { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-top:21px; }
+  .encourage { color:#8a969b; font-size:12px; line-height:1.5; }
+  .reward-hero { text-align:center; padding:35px 25px 15px; }
+  .reward-kicker { color:#97753f; font-size:12px; font-weight:900; letter-spacing:.13em; }
+  .reward-hero h2 { font-size:clamp(28px,4vw,40px); margin:10px 0 7px; letter-spacing:-.05em; }
+  .reward-hero p { color:#7b888e; margin:0; line-height:1.7; }
+  .chest-row { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; padding:22px clamp(18px,5vw,55px) 30px; }
+  .chest { border:1.5px dashed #d6b768; background:linear-gradient(160deg,#fff9e8,#f9edcd); min-height:150px; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:#735a2e; font-weight:900; transition:transform .16s,background .2s; padding:16px 10px; }
+  .chest:hover:not(:disabled) { transform:translateY(-4px) rotate(-1deg); background:#fff3c9; }
+  .chest .chest-icon { font-size:43px; filter:drop-shadow(0 3px 0 #d3a44e); }
+  .chest small { font-size:11px; color:#9c8149; }
+  .chest.opened { border-style:solid; border-color:#8cc5b3; background:#e7f6ef; color:#326f64; }
+  .chest.opened .chest-icon { filter:none; }
+  .reward-result { display:none; margin:0 clamp(18px,5vw,55px) 20px; background:#e8f6ef; border:1px solid #cce9db; border-radius:18px; padding:18px; text-align:center; }
+  .reward-result.show { display:block; animation:fadeUp .25s ease both; }
+  .reward-result strong { display:block; font-size:19px; margin-bottom:6px; }
+  .reward-result p { margin:0; color:#507b71; line-height:1.6; }
+  .reward-footer { text-align:center; padding:0 25px 30px; }
+  .reward-footer .btn { min-width:min(320px,100%); }
+  .reward-footer .muted { display:block; margin-top:10px; color:#98a0a0; font-size:11px; }
+  .result-hero { text-align:center; padding:36px 22px 26px; background:linear-gradient(135deg,#e8f5ef,#fff7dc); }
+  .result-medal { width:100px;height:100px;border-radius:30px;margin:0 auto 15px;display:grid;place-items:center;background:#fffdf7;box-shadow:0 12px 28px #24374614;font-size:48px;transform:rotate(-3deg); }
+  .result-hero h2 { font-size:clamp(30px,4vw,44px); letter-spacing:-.055em; margin:7px 0; }
+  .result-hero p { color:#697c83; margin:0; line-height:1.7; }
+  .result-stats { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:21px 24px 6px; }
+  .result-stat { background:#f7f4ec;border-radius:16px;padding:16px;text-align:center; }
+  .result-stat small { display:block;color:#869197;font-weight:800;font-size:11px;margin-bottom:7px; }
+  .result-stat strong { font-size:clamp(22px,3vw,30px); letter-spacing:-.04em; }
+  .review-wrap { padding:20px 24px 8px; }
+  .review-toggle { display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;border:1px solid var(--line);border-radius:15px;background:white;padding:14px 16px;font-weight:900;color:var(--ink); }
+  .review-list { display:none; margin-top:10px; }
+  .review-list.show { display:block; }
+  .review-item { padding:13px 14px;border-bottom:1px solid #eee9de;display:grid;grid-template-columns:28px 1fr;gap:10px;line-height:1.6; }
+  .review-dot { width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#e5f4ec;color:#327d6d;font-weight:900;font-size:12px; }
+  .review-dot.wrong { background:#ffebe4;color:#b7624c; }
+  .review-item strong { display:block;font-size:13px;margin-bottom:3px; }
+  .review-item small { color:#6f8086;font-size:12px; }
+  .result-actions { display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:22px 24px 30px; }
+  .footer-note { text-align:center; color:#a0a6a5; font-size:11px; margin:22px 0 0; }
+  .sparkle { display:inline-block; animation:twinkle 1.4s infinite alternate; }
+  @keyframes twinkle { from { transform:scale(.9) rotate(-8deg); opacity:.65; } to { transform:scale(1.12) rotate(8deg); opacity:1; } }
+  @media (max-width:720px) {
+    .page-shell { width:calc(100% - 20px); padding-top:12px; }
+    .hero { grid-template-columns:1fr; }
+    .hero-copy { padding:28px 25px 22px; }
+    .hero-art { min-height:240px; }
+    .sun { width:170px;height:170px;top:15px; }
+    .bath-illustration { transform:scale(.86); transform-origin:center bottom; height:205px; }
+    .feature-row { grid-template-columns:1fr; gap:9px; }
+    .feature { padding:13px 15px; }
+    .start-bottom { align-items:stretch; flex-direction:column; }
+    .player-name input { width:100%; }
+    .start-bottom .btn { width:100%; }
+    .quiz-top { padding:18px 17px 13px; }
+    .stats { gap:7px; margin-top:15px; }
+    .stat { padding:10px 8px; gap:6px; }
+    .stat-icon { font-size:17px; }
+    .stat strong { font-size:16px; }
+    .question-content { padding:23px 17px 24px; }
+    .options { grid-template-columns:1fr; gap:9px; }
+    .option { min-height:62px; }
+    .question-footer { align-items:stretch; flex-direction:column; }
+    .question-footer .btn { width:100%; }
+    .chest-row { gap:8px; padding:18px 13px 23px; }
+    .chest { min-height:128px; border-radius:16px; padding:10px 5px; }
+    .chest .chest-icon { font-size:34px; }
+    .chest strong { font-size:12px; }
+    .chest small { font-size:10px; }
+    .result-stats { gap:7px;padding:16px 13px 5px; }
+    .result-stat { padding:12px 5px; }
+    .review-wrap { padding:18px 14px 5px; }
+    .result-actions { padding:20px 15px 25px; }
+    .result-actions .btn { flex:1; min-width:135px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+<div class="page-shell">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">🛁</div><div><span class="brand-sub">도덕 2단원 · 반성과 성찰</span>그때목욕탕 퀴즈 대작전</div></div>
+    <div class="pill">📚 두 개의 PPT로 만든 20문제 퀴즈</div>
+  </header>
+
+  <section id="startScreen" class="screen active">
+    <div class="panel hero">
+      <div class="hero-copy">
+        <div class="eyebrow">THE REGRET BATHHOUSE · QUIZ GAME</div>
+        <h1>이야기 속 단서를 모아<br><span class="accent">퀴즈 대작전!</span></h1>
+        <p>은하와 밀키에게 어떤 일이 있었을까요? 인물과 사건을 떠올리고, 그때목욕탕의 비밀을 풀어 보세요. 정답을 맞히면 점수가 쌓이고 깜짝 보상도 열려요.</p>
+      </div>
+      <div class="hero-art" aria-label="목욕탕과 고양이 그림">
+        <div class="sun"></div><div class="steam">〰 〰 〰</div>
+        <div class="bath-illustration"><div class="bubble b1">✨</div><div class="bubble b2">💧</div><div class="bubble b3"></div><div class="cat-face">🐱</div><div class="tub"><span class="tub-leg left"></span><span class="tub-leg right"></span></div></div>
+        <div class="hero-tag">밀키의 보물상자가 기다려요!</div>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature"><div class="feature-icon">⭐</div><div><strong>정답마다 100점</strong><small>연속 정답을 이어 가면 추가 점수까지!</small></div></div>
+      <div class="feature"><div class="feature-icon">🎁</div><div><strong>3문제마다 보너스</strong><small>보물상자를 열고 점수와 특별 보상을 받아요.</small></div></div>
+      <div class="feature"><div class="feature-icon">💡</div><div><strong>힌트와 해설</strong><small>정답을 맞히지 못해도 이야기 내용을 다시 확인해요.</small></div></div>
+    </div>
+    <div class="start-bottom">
+      <div class="player-name"><label for="playerName">탐험가 이름 (선택)</label><input id="playerName" maxlength="16" placeholder="예: 밀키를 구하러 온 은하" autocomplete="off" /></div>
+      <button class="btn btn-primary" onclick="startQuiz()">퀴즈 시작하기 <span aria-hidden="true">→</span></button>
+    </div>
+    <p class="small-note">게임 안내: 정답 +100점 · 3연속 정답마다 +50점 · 3, 6, 9, 12, 15, 18번 문제 뒤 보너스 상자 열기<br>총 20문제예요. 업로드한 「그때목욕탕1」, 「그때목욕탕2」 PPT의 내용으로 구성했어요.</p>
+  </section>
+
+  <section id="quizScreen" class="screen">
+    <div class="panel">
+      <div class="quiz-top">
+        <div class="quiz-meta">
+          <div class="progress-area"><span class="progress-label" id="progressText">01 / 20</span><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
+          <div class="pill">🫧 목욕탕 탐험 중</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="stat-icon">🌟</span><div><small>현재 점수</small><strong id="scoreValue">0점</strong></div></div>
+          <div class="stat"><span class="stat-icon">🔥</span><div><small>연속 정답</small><strong id="streakValue">0문제</strong></div></div>
+          <div class="stat"><span class="stat-icon">✅</span><div><small>맞힌 문제</small><strong id="correctValue">0 / 20</strong></div></div>
+        </div>
+      </div>
+      <div class="question-content">
+        <div class="question-tags"><span class="chapter-tag" id="chapterTag">1부 · 아지천사</span><span class="type-tag" id="typeTag">객관식</span><span class="q-number" id="qNumber">QUESTION 01</span></div>
+        <h2 class="question-title" id="questionText"></h2>
+        <p class="question-desc" id="questionDesc">이야기의 단서를 떠올리며 가장 알맞은 답을 골라 보세요.</p>
+        <div class="options" id="optionsArea"></div>
+        <div class="hint-line"><button class="hint-btn" id="hintButton" onclick="toggleHint()">💡 힌트 살짝 보기</button></div>
+        <div class="hint-box" id="hintBox"></div>
+        <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+        <div class="question-footer"><div class="encourage" id="encourageText">천천히 읽고 골라도 괜찮아요.</div><button class="btn btn-primary" id="nextButton" onclick="nextStep()" disabled>답을 선택해 주세요</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="rewardScreen" class="screen">
+    <div class="panel">
+      <div class="reward-hero"><div class="reward-kicker"><span class="sparkle">✦</span> SECRET BONUS TIME <span class="sparkle">✦</span></div><h2>밀키의 보물상자를 열어 봐!</h2><p>상자 하나를 고르면 깜짝 보상이 나와요.<br>어떤 행운이 숨어 있을까요?</p></div>
+      <div class="chest-row" id="chestRow"></div>
+      <div class="reward-result" id="rewardResult" role="status" aria-live="polite"></div>
+      <div class="reward-footer"><button class="btn btn-primary" id="rewardContinue" onclick="continueAfterReward()" disabled>보상을 받은 뒤 계속하기 →</button><span class="muted">보물상자는 한 번만 열 수 있어요.</span></div>
+    </div>
+  </section>
+
+  <section id="resultScreen" class="screen">
+    <div class="panel">
+      <div class="result-hero"><div class="result-medal" id="resultEmoji">🏆</div><div class="eyebrow">QUIZ COMPLETED</div><h2 id="resultTitle">멋진 탐험이었어요!</h2><p id="resultMessage"></p></div>
+      <div class="result-stats">
+        <div class="result-stat"><small>최종 점수</small><strong id="finalScore">0점</strong></div>
+        <div class="result-stat"><small>정답 수</small><strong id="finalCorrect">0 / 20</strong></div>
+        <div class="result-stat"><small>받은 보상</small><strong id="finalRewards">0개</strong></div>
+      </div>
+      <div class="review-wrap"><button class="review-toggle" onclick="toggleReview()"><span>📝 정답과 해설 다시 보기</span><span id="reviewArrow">＋</span></button><div class="review-list" id="reviewList"></div></div>
+      <div class="result-actions"><button class="btn btn-primary" onclick="restartQuiz()">처음부터 다시 하기 ↻</button><button class="btn btn-white" onclick="window.print()">결과 인쇄하기</button></div>
+    </div>
+  </section>
+  <p class="footer-note">그때목욕탕 퀴즈 대작전 · 인터넷 연결 없이 실행할 수 있어요.</p>
+</div>
+<script>
+const questions = [
+  {
+    type: 'choice', chapter: '1부 · 후회되는 그때로',
+    question: '은하의 아빠가 준비한 깜짝 영상을 올린 곳은 어디인가요?',
+    hint: '은하의 가족이 영상을 올리는 채널 이름을 떠올려 보세요.',
+    options: [
+      ['A', '별이이야'], ['B', '동사함TV'], ['C', '댕댕천사 채널'], ['D', '오늘의 책']
+    ], answer: 'B',
+    explanation: '아빠는 밀키가 깜짝 등장하는 영상을 유튜브 채널 ‘동사함TV’에 올렸어요.'
+  },
+  {
+    type: 'choice', chapter: '1부 · 후회되는 그때로',
+    question: '영상에 잠깐 등장한 은하네 반려묘 밀키의 모습은 어땠나요?',
+    hint: '은하가 영상에서 발견한 고양이의 털색과 귀 모양을 떠올려 보세요.',
+    options: [
+      ['A', '검은 털에 꼿꼿한 귀'], ['B', '갈색 털에 긴 꼬리'], ['C', '하얀 몸에 반쯤 접힌 귀'], ['D', '회색 줄무늬에 큰 귀']
+    ], answer: 'C',
+    explanation: '밀키는 온몸이 하얗고 귀 끝이 반쯤 접혀 있어요. 오른쪽 발도 바깥쪽으로 굽어 있지요.'
+  },
+  {
+    type: 'choice', chapter: '2부 · 아지천사',
+    question: '은하는 왜 강하진이 ‘아지천사’라고 의심했나요?',
+    hint: '생일 날짜를 천사라는 뜻으로 바꿔 생각한 단서가 있었어요.',
+    options: [
+      ['A', '생일이 10월 4일이고 영상을 보고 있어서'],
+      ['B', '밀키의 사진을 찍어 올려서'],
+      ['C', '아빠에게 직접 악플을 보내서'],
+      ['D', '소소별에게 자신의 아이디를 알려 줘서']
+    ], answer: 'A',
+    explanation: '은하는 강하진의 생일인 10월 4일을 ‘1004, 천사’로 연결하고, 강하진이 영상을 보고 있는 모습도 보고 의심했어요. 하지만 그것만으로 범인이라고 판단한 것은 잘못이었어요.'
+  },
+  {
+    type: 'ox', chapter: '2부 · 아지천사',
+    question: '강하진이 사용한 댓글 아이디는 ‘아지천사’였다.',
+    hint: '고민지가 강하진의 진짜 아이디를 알려 주는 장면을 떠올려 보세요.',
+    options: [['O', '맞아요'], ['X', '아니에요']], answer: 'X',
+    explanation: '강하진의 아이디는 ‘댕댕천사’였어요. 은하는 충분한 증거 없이 강하진을 아지천사라고 오해했어요.'
+  },
+  {
+    type: 'choice', chapter: '3부 · 되돌리고 싶어',
+    question: '은하가 나중에 가장 후회하게 된 자신의 행동은 무엇인가요?',
+    hint: '친구의 물건과 개인정보를 허락 없이 살펴본 행동을 생각해 보세요.',
+    options: [
+      ['A', '아빠가 영상을 올리는 것을 도운 일'],
+      ['B', '밀키를 영상에 등장시킨 일'],
+      ['C', '강하진의 휴대폰을 몰래 들여다본 일'],
+      ['D', '고민지의 생일 축하 글을 본 일']
+    ], answer: 'C',
+    explanation: '은하는 아지천사를 찾으려는 마음에 강하진의 휴대폰을 허락 없이 들여다봤어요. 의심이 들더라도 다른 사람의 물건을 몰래 보는 것은 옳지 않아요.'
+  },
+  {
+    type: 'choice', chapter: '3부 · 되돌리고 싶어',
+    question: '은하와 고민지가 교실에서 다투는 장면을 찍어 영상으로 올린 인물은 누구인가요?',
+    hint: '유튜브 채널 이름이 ‘별이이야’인 아이예요.',
+    options: [
+      ['A', '고민지'], ['B', '소소별'], ['C', '강하진'], ['D', '은하의 아빠']
+    ], answer: 'B',
+    explanation: '소소별은 ‘별이이야’ 채널을 운영했어요. 은하가 강하진의 휴대폰을 들여다보다가 들킨 장면을 찍어 올렸지요.'
+  },
+  {
+    type: 'choice', chapter: '4부 · 그때목욕탕 초대권',
+    question: '은하는 어떻게 신비한 그때목욕탕을 찾아가게 되었나요?',
+    hint: '공원에서 종이 한 장을 집었을 때 나타난 안내자를 떠올려 보세요.',
+    options: [
+      ['A', '아빠가 알려 준 주소를 찾아갔다'],
+      ['B', '소소별의 영상에 나온 장소를 찾아갔다'],
+      ['C', '안내 개를 따라 골목과 언덕을 지나갔다'],
+      ['D', '강하진과 함께 버스를 타고 갔다']
+    ], answer: 'C',
+    explanation: '공원에서 종이를 집자 ‘그때목욕탕’ 조끼를 입은 안내 개가 나타났고, 은하는 안내 개를 따라 골목과 언덕길을 지나 목욕탕에 도착했어요.'
+  },
+  {
+    type: 'ox', chapter: '4부 · 그때목욕탕 초대권',
+    question: '그때목욕탕에서는 사람이 동물이 되고, 동물이 사람이 되기도 한다.',
+    hint: '탈바꿈실에서 일어나는 특별한 일을 생각해 보세요.',
+    options: [['O', '맞아요'], ['X', '아니에요']], answer: 'O',
+    explanation: '그때목욕탕에서는 서로의 정체를 숨기기 위해 사람이 동물이 되고 동물이 사람이 되는 ‘탈바꿈’을 해요.'
+  },
+  {
+    type: 'choice', chapter: '4부 · 그때목욕탕 초대권',
+    question: '그때목욕탕에서 사람이 동물로, 동물이 사람으로 탈바꿈하는 까닭은 무엇인가요?',
+    hint: '목욕탕에 있는 사람들이 서로 알아보지 못하게 하는 특별한 규칙을 생각해 보세요.',
+    options: [
+      ['A', '몸을 더 빨리 씻기 위해서'],
+      ['B', '서로의 정체를 숨기기 위해서'],
+      ['C', '과거의 기억을 지우기 위해서'],
+      ['D', '앞으로 올 행운을 모으기 위해서']
+    ], answer: 'B',
+    explanation: '그때목욕탕에서는 자신의 정체를 숨기기 위해 사람이 동물이 되고 동물이 사람이 되는 탈바꿈을 해요.'
+  },
+  {
+    type: 'choice', chapter: '4부 · 그때목욕탕 초대권',
+    question: '은하가 고양이 수건을 고른 뒤 받은 사물함 열쇠의 번호는 몇 번인가요?',
+    hint: '은하가 고양이로 탈바꿈한 뒤에도 귀에 번호표가 달려 있었어요.',
+    options: [['A', '103번'], ['B', '113번'], ['C', '130번'], ['D', '311번']], answer: 'B',
+    explanation: '은하는 고양이 수건과 113이라고 적힌 사물함 열쇠를 받았어요. 나중에 고양이로 변한 뒤에도 113번 번호표가 달려 있었지요.'
+  },
+  {
+    type: 'choice', chapter: '5부 · 괴상한 노인의 정체',
+    question: '은하를 따라오며 “라면 먹고 가!”라고 말했던 괴상한 노인의 정체는 누구였나요?',
+    hint: '하얀 몸, 반쯤 접힌 귀, 바깥쪽으로 굽은 오른쪽 발이 단서예요.',
+    options: [['A', '안내 개'], ['B', '소 그때밀이'], ['C', '밀키'], ['D', '토끼 경비원']], answer: 'C',
+    explanation: '괴상한 노인은 바로 밀키였어요. 하얀 몸과 접힌 귀, 굽은 오른쪽 발이 밀키의 모습과 같았어요.'
+  },
+  {
+    type: 'ox', chapter: '6부 · 후회되는 그때로',
+    question: '그때밀이에게는 평생 세 번 과거로 돌아갈 기회가 있고, 과거로 돌아간 시간만큼 미래가 줄어든다.',
+    hint: '그때밀이가 과거로 돌아가는 일의 대가를 설명하는 장면을 떠올려 보세요.',
+    options: [['O', '맞아요'], ['X', '아니에요']], answer: 'O',
+    explanation: '그때밀이는 과거로 돌아갈 기회가 평생 세 번뿐이며, 예를 들어 일주일 전으로 가면 미래의 시간도 일주일 줄어든다고 설명했어요.'
+  },
+  {
+    type: 'choice', chapter: '6부 · 후회되는 그때로',
+    question: '밀키는 고양이로 탈바꿈한 은하를 어떻게 알아보았나요?',
+    hint: '밀키는 은하의 몸에 예전부터 있던 특징이 탈바꿈 뒤에도 남아 있다고 했어요.',
+    options: [
+      ['A', '등에 남은 몽고반점 무늬'],
+      ['B', '은하가 내는 목소리'],
+      ['C', '고양이 수건의 색깔'],
+      ['D', '사물함 열쇠의 모양']
+    ], answer: 'A',
+    explanation: '은하의 등에 있던 몽고반점이 탈바꿈 뒤에도 무늬로 남아 있었어요. 밀키는 그 무늬를 보고 은하를 알아보았어요.'
+  },
+  {
+    type: 'choice', chapter: '6부 · 후회되는 그때로',
+    question: '‘싸우나’는 어떤 곳인가요?',
+    hint: '문 앞 안내문에는 후회되는 그때와 싸워 이기라는 뜻의 글이 적혀 있었어요.',
+    options: [
+      ['A', '후회되는 과거로 보내 주는 곳'],
+      ['B', '자신의 후회와 맞서 싸우려는 곳'],
+      ['C', '행운을 내고 라면을 사는 곳'],
+      ['D', '사람과 동물이 탈바꿈하는 곳']
+    ], answer: 'B',
+    explanation: '싸우나의 안내문에는 후회되는 그때와 싸워 이기라는 뜻이 담겨 있어요. 죄책감 때문에 힘들어하는 개가 그곳에서 반복해서 도전하고 있었어요.'
+  },
+  {
+    type: 'choice', chapter: '7부 · 먹고가게',
+    question: '먹고가게에서 ‘그때알았더라면’ 라면을 사면 무엇을 대가로 내야 하나요?',
+    hint: '메뉴판에는 돈 대신 다른 것으로 값을 낸다고 적혀 있었어요.',
+    options: [
+      ['A', '목욕탕 이용 기회 한 번'],
+      ['B', '지금 가지고 있는 기억 하나'],
+      ['C', '앞으로 찾아올 행운 하나'],
+      ['D', '친구와의 추억 한 가지']
+    ], answer: 'C',
+    explanation: '라면의 값은 행운 한 개예요. 앞으로 자신에게 찾아올 행운 하나를 미리 당겨 쓰는 것이지요.'
+  },
+  {
+    type: 'choice', chapter: '7부 · 먹고가게',
+    question: '은하가 과거로 돌아가기 전에 ‘그때알았더라면’을 먹으려 한 이유는 무엇인가요?',
+    hint: '과거로 돌아갈 때 기억이 어떻게 되는지 그때밀이들의 설명을 떠올려 보세요.',
+    options: [
+      ['A', '현재 겪은 일을 기억하기 위해서'],
+      ['B', '미래의 행운을 더 많이 얻기 위해서'],
+      ['C', '고양이의 모습으로 남기 위해서'],
+      ['D', '강하진의 기억을 지우기 위해서']
+    ], answer: 'A',
+    explanation: '과거로 돌아가면 현재의 기억을 잃게 될 수 있기 때문에, 은하는 ‘그때알았더라면’을 먹어 지금의 일을 기억하려고 했어요.'
+  },
+  {
+    type: 'choice', chapter: '7부 · 먹고가게',
+    question: '은하가 라면을 먹을 때 맛이 달라진 것은 무엇과 연결되어 있었나요?',
+    hint: '라면을 먹을 때마다 기쁘거나 괴로웠던 장면들이 차례로 떠올랐어요.',
+    options: [
+      ['A', '라면을 먹는 속도'],
+      ['B', '목욕탕 안의 온도'],
+      ['C', '밀키가 고른 수건'],
+      ['D', '떠오르는 기억과 그때 느끼는 감정']
+    ], answer: 'D',
+    explanation: '기쁜 기억이 떠오를 때는 달콤한 맛이, 악플이나 잘못을 떠올릴 때는 맵고 떫은 맛이 났어요. 라면의 맛은 은하가 떠올리는 기억과 감정에 따라 달라졌어요.'
+  },
+  {
+    type: 'choice', chapter: '7부 · 먹고가게',
+    question: '밀키가 과거로 돌아갈 수 있다면 꼭 하고 싶었던 일은 무엇인가요?',
+    hint: '밀키는 예전에 함께 살던 사람과 헤어질 때 하지 못한 일이 있다고 말했어요.',
+    options: [
+      ['A', '자신의 사진을 다시 찍는 일'],
+      ['B', '제대로 작별 인사를 하고 행복했던 마음을 전하는 일'],
+      ['C', '새로운 목욕탕을 여는 일'],
+      ['D', '은하의 영상을 인터넷에서 지우는 일']
+    ], answer: 'B',
+    explanation: '밀키는 예전 반려 인간에게 제대로 작별 인사를 하지 못한 것을 후회했어요. 다시 만난다면 함께여서 행복했다고 말하고 싶어 했어요.'
+  },
+  {
+    type: 'choice', chapter: '7부 · 먹고가게',
+    question: '은하는 과거로 돌아가기 전 밀키에게 어떤 약속을 했나요?',
+    hint: '밀키가 예전 반려 인간에게 전하고 싶어 했던 말을 떠올려 보세요.',
+    options: [
+      ['A', '밀키를 영상에 다시 출연시키겠다고 했다'],
+      ['B', '목욕탕의 모든 행운을 돌려주겠다고 했다'],
+      ['C', '예전 반려 인간에게 밀키의 마음을 전하겠다고 했다'],
+      ['D', '밀키와 함께 영원히 고양이로 살겠다고 했다']
+    ], answer: 'C',
+    explanation: '은하는 과거로 돌아가면 밀키가 예전 반려 인간에게 전하고 싶었던 마음을 꼭 전해 주겠다고 약속했어요.'
+  },
+  {
+    type: 'choice', chapter: '7부 · 먹고가게',
+    question: '이야기가 전하는 ‘후회와 반성’에 대한 생각으로 가장 알맞은 것은 무엇인가요?',
+    hint: '잘못을 없던 일로 만드는 것과, 잘못을 기억하고 배우는 것의 차이를 생각해 보세요.',
+    options: [
+      ['A', '실수는 무조건 숨기면 해결된다'],
+      ['B', '다른 사람을 의심할 때는 추측만으로 판단해도 된다'],
+      ['C', '과거만 바꾸면 잘못을 돌아볼 필요가 없다'],
+      ['D', '잘못을 돌아보고 진심으로 사과하며 같은 실수를 반복하지 않도록 배운다']
+    ], answer: 'D',
+    explanation: '이야기는 누구나 실수할 수 있지만, 후회하는 마음으로 자신의 행동을 돌아보고 진심으로 사과하며 같은 잘못을 반복하지 않도록 배우는 것이 중요하다고 전해요.'
+  }
+];
+
+let questionIndex = 0;
+let score = 0;
+let streak = 0;
+let correctCount = 0;
+let rewardsReceived = 0;
+let answered = false;
+let selectedAnswer = null;
+let history = [];
+let currentLoot = [];
+let rewardChosen = false;
+let playerName = '탐험가';
+const milestoneQuestions = [3, 6, 9, 12, 15, 18];
+const lootDeck = [
+  { title: '밀키의 행운 부적', icon: '🍀', points: 150, detail: '뜻밖의 행운이 반짝! 보너스 150점을 챙겼어요.' },
+  { title: '그때알았더라면 라면', icon: '🍜', points: 100, detail: '후회에서 배우는 지혜를 얻었어요. 보너스 100점!' },
+  { title: '따뜻한 응원 스티커', icon: '💗', points: 50, detail: '밀키가 응원을 보내요. 보너스 50점!' },
+  { title: '반성왕 반짝 배지', icon: '🏅', points: 80, detail: '자신의 행동을 돌아보는 탐험가에게 배지가! 보너스 80점.' },
+  { title: '목욕탕 특별 이용권', icon: '🎟️', points: 120, detail: '특별 이용권 발견! 보너스 120점을 받았어요.' }
+];
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function startQuiz() {
+  const typed = document.getElementById('playerName').value.trim();
+  playerName = typed ? typed.slice(0, 16) : '탐험가';
+  questionIndex = 0; score = 0; streak = 0; correctCount = 0; rewardsReceived = 0;
+  answered = false; selectedAnswer = null; history = []; currentLoot = []; rewardChosen = false;
+  showScreen('quizScreen'); renderQuestion();
+}
+function renderQuestion() {
+  const q = questions[questionIndex];
+  answered = false; selectedAnswer = null;
+  document.getElementById('progressText').textContent = `${String(questionIndex + 1).padStart(2,'0')} / ${questions.length}`;
+  document.getElementById('progressFill').style.width = `${(questionIndex / questions.length) * 100}%`;
+  document.getElementById('chapterTag').textContent = q.chapter;
+  document.getElementById('typeTag').textContent = q.type === 'ox' ? 'O / X 퀴즈' : '객관식';
+  document.getElementById('qNumber').textContent = `QUESTION ${String(questionIndex + 1).padStart(2,'0')}`;
+  document.getElementById('questionText').textContent = q.question;
+  document.getElementById('questionDesc').textContent = q.type === 'ox' ? '문장의 내용이 맞으면 O, 틀리면 X를 골라 보세요.' : '이야기의 단서를 떠올리며 가장 알맞은 답을 골라 보세요.';
+  document.getElementById('optionsArea').innerHTML = q.options.map(([value,label]) => `<button class="option" data-value="${value}" onclick="selectAnswer('${value}')"><span class="option-letter">${value}</span><span class="option-text">${label}</span></button>`).join('');
+  const hint = document.getElementById('hintBox'); hint.textContent = q.hint; hint.classList.remove('show');
+  document.getElementById('hintButton').textContent = '💡 힌트 살짝 보기';
+  document.getElementById('feedback').className = 'feedback'; document.getElementById('feedback').innerHTML = '';
+  document.getElementById('nextButton').disabled = true;
+  document.getElementById('nextButton').textContent = '답을 선택해 주세요';
+  document.getElementById('encourageText').textContent = questionIndex % 3 === 2 ? '다음에는 보물상자가 기다리고 있어요!' : '천천히 읽고 골라도 괜찮아요.';
+  updateStats();
+}
+function updateStats() {
+  document.getElementById('scoreValue').textContent = `${score.toLocaleString('ko-KR')}점`;
+  document.getElementById('streakValue').textContent = `${streak}문제`;
+  document.getElementById('correctValue').textContent = `${correctCount} / ${questions.length}`;
+}
+function toggleHint() {
+  const hint = document.getElementById('hintBox');
+  hint.classList.toggle('show');
+  document.getElementById('hintButton').textContent = hint.classList.contains('show') ? '💡 힌트 숨기기' : '💡 힌트 살짝 보기';
+}
+function selectAnswer(value) {
+  if (answered) return;
+  answered = true; selectedAnswer = value;
+  const q = questions[questionIndex];
+  const isCorrect = value === q.answer;
+  let earned = 0;
+  if (isCorrect) {
+    correctCount++; streak++; earned += 100; score += 100;
+    if (streak >= 3 && streak % 3 === 0) { earned += 50; score += 50; }
+  } else { streak = 0; }
+  const options = document.querySelectorAll('.option');
+  options.forEach(btn => {
+    btn.disabled = true;
+    const v = btn.dataset.value;
+    if (v === q.answer) btn.classList.add('correct');
+    if (v === value && !isCorrect) btn.classList.add('wrong');
+  });
+  const feedback = document.getElementById('feedback');
+  feedback.className = `feedback show ${isCorrect ? 'good' : 'bad'}`;
+  const extra = isCorrect && earned > 100 ? '<br><span class="points">🔥 3연속 정답 보너스 +50점</span>' : '';
+  feedback.innerHTML = `<strong>${isCorrect ? '🎉 정답이에요!' : '🫧 아쉬워요, 해설을 확인해 보세요.'}</strong><span>${q.explanation}</span>${isCorrect ? `<br><span class="points">+${earned}점 획득</span>` : `<br><span class="points" style="color:#a15e49">정답: ${q.options.find(o => o[0] === q.answer)[1]}</span>`}${extra}`;
+  history[questionIndex] = { chosen: value, correct: isCorrect, earned, answer: q.answer };
+  document.getElementById('nextButton').disabled = false;
+  document.getElementById('nextButton').textContent = questionIndex === questions.length - 1 ? '결과 확인하기 →' : '다음 문제 →';
+  document.getElementById('encourageText').textContent = isCorrect ? (streak >= 3 ? `대단해요, ${streak}연속 정답!` : '좋아요! 다음 단서도 찾아봐요.') : '괜찮아요. 해설을 기억하고 다음 문제로 가요.';
+  document.getElementById('progressFill').style.width = `${((questionIndex + 1) / questions.length) * 100}%`;
+  updateStats();
+}
+function nextStep() {
+  if (!answered) return;
+  const completed = questionIndex + 1;
+  if (completed === questions.length) { showResult(); return; }
+  if (milestoneQuestions.includes(completed)) { prepareReward(); showScreen('rewardScreen'); return; }
+  questionIndex++; showScreen('quizScreen'); renderQuestion();
+}
+function prepareReward() {
+  currentLoot = [...lootDeck].sort(() => Math.random() - 0.5).slice(0,3);
+  rewardChosen = false;
+  document.getElementById('chestRow').innerHTML = currentLoot.map((item,i) => `<button class="chest" onclick="openChest(${i})" id="chest${i}"><span class="chest-icon">🎁</span><strong>상자 ${i + 1}</strong><small>무엇이 나올까?</small></button>`).join('');
+  document.getElementById('rewardResult').className = 'reward-result';
+  document.getElementById('rewardResult').innerHTML = '';
+  document.getElementById('rewardContinue').disabled = true;
+  document.getElementById('rewardContinue').textContent = '보상을 받은 뒤 계속하기 →';
+}
+function openChest(index) {
+  if (rewardChosen) return;
+  rewardChosen = true;
+  const item = currentLoot[index];
+  score += item.points; rewardsReceived++; updateStats();
+  document.querySelectorAll('.chest').forEach((btn,i) => {
+    btn.disabled = true;
+    if (i === index) { btn.classList.add('opened'); btn.innerHTML = `<span class="chest-icon">${item.icon}</span><strong>${item.title}</strong><small>+${item.points}점</small>`; }
+    else { btn.style.opacity = '.5'; }
+  });
+  const box = document.getElementById('rewardResult');
+  box.className = 'reward-result show';
+  box.innerHTML = `<strong>${item.icon} ${item.title}</strong><p>${item.detail}</p>`;
+  document.getElementById('rewardContinue').disabled = false;
+  document.getElementById('rewardContinue').textContent = '보상 챙기고 계속하기 →';
+}
+function continueAfterReward() {
+  if (!rewardChosen) return;
+  questionIndex++; showScreen('quizScreen'); renderQuestion();
+}
+function showResult() {
+  showScreen('resultScreen');
+  let title, emoji, message;
+  const maxRank = score >= 2700 && correctCount >= 17;
+  if (maxRank) { title = '그때목욕탕 명예 탐험가!'; emoji = '👑'; message = `${playerName}, 놀라운 집중력이에요! 이야기 속 사건과 메시지를 꼼꼼히 살펴봤어요.`; }
+  else if (score >= 2000 && correctCount >= 13) { title = '반성과 성찰 달인!'; emoji = '🏆'; message = `${playerName}, 중요한 단서를 잘 찾아냈어요. 잘못을 돌아보고 배우는 마음도 기억해요.`; }
+  else if (score >= 1200 && correctCount >= 8) { title = '밀키의 든든한 친구!'; emoji = '🐱'; message = `${playerName}, 꽤 많은 단서를 찾아냈어요. 해설을 다시 보면 더 잘 기억할 수 있을 거예요.`; }
+  else { title = '용기 있는 첫 탐험가!'; emoji = '🫧'; message = `${playerName}, 첫 탐험을 마쳤어요! 정답과 해설을 살펴보고 다시 도전해 보세요.`; }
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMessage').textContent = message;
+  document.getElementById('finalScore').textContent = `${score.toLocaleString('ko-KR')}점`;
+  document.getElementById('finalCorrect').textContent = `${correctCount} / ${questions.length}`;
+  document.getElementById('finalRewards').textContent = `${rewardsReceived}개`;
+  document.getElementById('reviewList').innerHTML = questions.map((q,i) => {
+    const h = history[i] || {correct:false,chosen:'?',answer:q.answer};
+    const answerLabel = q.options.find(o => o[0] === q.answer)?.[1] || '';
+    const chosenLabel = q.options.find(o => o[0] === h.chosen)?.[1] || '선택하지 않음';
+    return `<div class="review-item"><span class="review-dot ${h.correct ? '' : 'wrong'}">${h.correct ? '✓' : '!'}</span><div><strong>${i+1}. ${q.question}</strong><small>내 답: ${escapeHtml(chosenLabel)} · 정답: ${escapeHtml(answerLabel)}<br>${escapeHtml(q.explanation)}</small></div></div>`;
+  }).join('');
+  document.getElementById('reviewList').classList.remove('show');
+  document.getElementById('reviewArrow').textContent = '＋';
+}
+function toggleReview() {
+  const list = document.getElementById('reviewList');
+  list.classList.toggle('show');
+  document.getElementById('reviewArrow').textContent = list.classList.contains('show') ? '−' : '＋';
+}
+function restartQuiz() {
+  document.getElementById('playerName').value = playerName === '탐험가' ? '' : playerName;
+  showScreen('startScreen');
+}
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+</script>
+</body>
+</html>
